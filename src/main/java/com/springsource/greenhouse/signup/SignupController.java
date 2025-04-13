@@ -61,12 +61,15 @@ import com.springsource.greenhouse.utils.MessageType;
 @Controller
 public class SignupController {
 
+	// サインアップヘルパーのインスタンスを保持します。
 	private final SignupHelper signupHelper;
 
+	// メッセージ属性の定数を定義します。
 	private static final String MESSAGE_ATTRIBUTE = "message";
 
 	@Inject
 	public SignupController(AccountRepository accountRepository, SignedUpGateway gateway) {
+		// サインアップヘルパーを初期化します。
 		this.signupHelper = new SignupHelper(accountRepository, gateway);
 	}
 
@@ -102,6 +105,7 @@ public class SignupController {
 		}
 		boolean result = signupHelper.signup(form, formBinding, new SignupCallback() {
 			public void postSignup(Account account) {
+				// サインアップ後の処理を行います。
 				ProviderSignInUtils.handlePostSignUp(account.getId().toString(), request);
 			}
 		});
@@ -116,7 +120,8 @@ public class SignupController {
 	@PostMapping("/signup")
 	public ResponseEntity<Map<String, Object>> signupFromApi(@RequestBody SignupForm form) {
 
-		BindingResult formBinding = validate(form); // SPR-9826が修正されるまでの一時的な手動バリデーション。
+		// SPR-9826が修正されるまでの一時的な手動バリデーション。
+		BindingResult formBinding = validate(form);
 
 		if (formBinding.hasErrors()) {
 			HashMap<String, Object> errorResponse = new HashMap<String, Object>();

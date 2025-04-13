@@ -16,24 +16,36 @@
 package com.springsource.greenhouse.account;
 
 /**
- * Male or Female.
- * Used to customize Account messages (e.g. he or she usage) and to choose the default profile picture.
+ * 男性または女性。
+ * アカウントメッセージ（例: 彼または彼女の使用）をカスタマイズし、デフォルトのプロフィール画像を選択するために使用されます。
+ * 
  * @author Keith Donald
  */
 public enum Gender {
-	
-	MALE ('M'), FEMALE ('F');
-	
+
+	MALE('M'), FEMALE('F');
+
 	private char code;
-	
-	private Gender(char code) { 
+
+	private Gender(char code) {
 		this.code = code;
 	}
-	
+
+	/**
+	 * 性別コードを返します。
+	 * 
+	 * @return 性別コード ('M' または 'F')
+	 */
 	public char code() {
 		return code;
 	}
 
+	/**
+	 * 文字から対応するGender列挙型を返します。
+	 * 
+	 * @param charAt 性別を表す文字 ('M' または 'F')
+	 * @return 対応するGender列挙型
+	 */
 	public static Gender valueOf(char charAt) {
 		if (charAt == 'M') {
 			return Gender.MALE;

@@ -28,12 +28,12 @@ import org.springframework.web.util.UriTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
- * RowMapper that maps a row in a ResultSet to an Account object instance.
- * Designed to be re-used anywhere Account SQL mapping needs to be performed.
- * Encapsulates the trickiest aspects of AccountMapping: mapping the picture and
- * profile URL fields.
- * Also capable of mapping AccountReference objects, for generating links to
- * public user profile without exposing private user data.
+ * ResultSetの行をAccountオブジェクトインスタンスにマッピングするRowMapper。
+ * Account SQLマッピングが必要な場所で再利用するように設計されています。
+ * AccountMappingの最も難しい側面をカプセル化しています：
+ * pictureとprofile URLフィールドのマッピング。
+ * また、プライベートなユーザーデータを公開せずに、
+ * 公開ユーザープロフィールへのリンクを生成するためのAccountReferenceオブジェクトのマッピングも可能です。
  * 
  * @author Keith Donald
  */
@@ -68,31 +68,29 @@ public class AccountMapper implements RowMapper<Account> {
 		this(new PictureUrlMapper(new PictureUrlFactory(pictureStorage), PictureSize.SMALL), profileUrlTemplate);
 	}
 
-	// implementing RowMapper<Account>
-
+	// ResultSetの行をAccountオブジェクトにマッピングするメソッド
+	// @param rs SQLクエリの結果セット
+	// @param row 現在の行番号
+	// @return Accountオブジェクト
 	public Account mapRow(ResultSet rs, int row) throws SQLException {
 		return new Account(rs.getLong("id"), rs.getString("firstName"), rs.getString("lastName"), rs.getString("email"),
 				rs.getString("username"), pictureUrlMapper.mapRow(rs, row), profileUrlTemplate);
 	}
 
 	/**
-	 * A RowMapper that maps a lighter-weight {@link ProfileReference} object
-	 * instead of a full-blown {@link Account}.
-	 * Designed to be used when generating links to user profiles.
+	 * ProfileReferenceオブジェクトをマッピングするRowMapper。
+	 * ユーザープロフィールへのリンクを生成する際に使用されるように設計されています。
 	 */
 	public RowMapper<ProfileReference> getReferenceMapper() {
 		return referenceMapper;
 	}
 
-	/**
-	 * Creates a new Account from a Person model.
-	 * The Account's username is initially null and may be changed later.
-	 * The Account's profile picture is initially the default picture for the
-	 * Person's gender (it may also be changed later).
-	 * 
-	 * @param accountId the assigned internal account identifier
-	 * @param person    the person model
-	 */
+	// Personモデルから新しいAccountを作成します。
+	// Accountのユーザー名は初期的にnullであり、後で変更される可能性があります。
+	// Accountのプロフィール画像は、初期的にPersonの性別に基づくデフォルト画像です（後で変更される可能性もあります）。
+	// @param accountId 割り当てられた内部アカウント識別子
+	// @param person Personモデル
+	// @return 新しいAccountオブジェクト
 	public Account newAccount(Long accountId, Person person) {
 		String pictureUrl = pictureUrlMapper.defaultPictureUrl(person.getGender());
 		return new Account(accountId, person.getFirstName(), person.getLastName(), person.getEmail(), null, pictureUrl,
@@ -101,6 +99,10 @@ public class AccountMapper implements RowMapper<Account> {
 
 	// internal helpers
 
+	// ProfileReferenceオブジェクトをマッピングする内部RowMapper。
+	// @param rs SQLクエリの結果セット
+	// @param row 現在の行番号
+	// @return ProfileReferenceオブジェクト
 	private final RowMapper<ProfileReference> referenceMapper = new RowMapper<ProfileReference>() {
 		public ProfileReference mapRow(ResultSet rs, int row) throws SQLException {
 			String id = getId(rs);
@@ -108,6 +110,9 @@ public class AccountMapper implements RowMapper<Account> {
 			return new ProfileReference(id, label, pictureUrlMapper.mapRow(rs, row));
 		}
 
+		// ResultSetからIDを取得するヘルパーメソッド
+		// @param rs SQLクエリの結果セット
+		// @return ID文字列
 		private String getId(ResultSet rs) throws SQLException {
 			String username = rs.getString("username");
 			return username != null ? username : rs.getString("id");

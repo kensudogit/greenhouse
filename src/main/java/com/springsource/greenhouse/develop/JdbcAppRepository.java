@@ -18,6 +18,7 @@ package com.springsource.greenhouse.develop;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -106,6 +107,13 @@ public class JdbcAppRepository implements AppRepository {
 		Long appId = jdbcTemplate.queryForLong("call identity()");
 		jdbcTemplate.update(INSERT_APP_DEVELOPER, appId, accountId);
 		return slug;
+	}
+
+	@Override
+	public List<Map<String, Object>> findConnectedApps(Long accountId) {
+		return jdbcTemplate.queryForList(
+				"select a.name as name, c.token_id as accessToken from App a, oauth_access_token c where c.client_id = a.apiKey and c.user_name = ?",
+				accountId);
 	}
 
 	// 内部ヘルパーメソッド

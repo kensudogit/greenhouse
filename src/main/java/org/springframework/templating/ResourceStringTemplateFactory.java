@@ -21,6 +21,8 @@ import java.io.Reader;
 
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.EncodedResource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 単一のリソースからテンプレートインスタンスを作成するStringTemplateファクトリ。
@@ -28,6 +30,8 @@ import org.springframework.core.io.support.EncodedResource;
  * @author Keith Donald
  */
 public final class ResourceStringTemplateFactory implements StringTemplateFactory {
+
+	private static final Logger logger = LoggerFactory.getLogger(ResourceStringTemplateFactory.class);
 
 	private final org.antlr.stringtemplate.StringTemplate compiledPrototype;
 
@@ -69,7 +73,7 @@ public final class ResourceStringTemplateFactory implements StringTemplateFactor
 				try {
 					reader.close();
 				} catch (IOException e) {
-					System.err.println("Unable to close template resource " + resource + ": " + e.getMessage());
+					logger.error("Unable to close template resource {}: {}", resource, e.getMessage());
 				}
 			}
 		}

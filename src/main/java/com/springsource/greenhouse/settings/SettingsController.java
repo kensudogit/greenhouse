@@ -32,6 +32,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.DeleteMapping;
 
 import com.springsource.greenhouse.account.Account;
+import com.springsource.greenhouse.app.AppRepository;
 
 /**
  * メンバーアカウント設定を変更するためのUIコントローラー。
@@ -46,10 +47,13 @@ public class SettingsController {
 
 	private TokenStore tokenStore;
 
+	private final AppRepository appRepository;
+
 	@Inject
-	public SettingsController(TokenStore tokenStore, JdbcTemplate jdbcTemplate) {
+	public SettingsController(TokenStore tokenStore, JdbcTemplate jdbcTemplate, AppRepository appRepository) {
 		this.tokenStore = tokenStore;
 		this.jdbcTemplate = jdbcTemplate;
+		this.appRepository = appRepository;
 	}
 
 	/**
@@ -59,10 +63,7 @@ public class SettingsController {
 	 */
 	@GetMapping("/settings")
 	public void settingsPage(Account account, Model model) {
-		// TODO: このクエリを修正する
-		List<Map<String, Object>> apps = jdbcTemplate.queryForList(
-				"select a.name as name, c.token_id as accessToken from App a, oauth_access_token c where c.client_id = a.apiKey and c.user_name = ?",
-				account.getId());
+		List<Map<String, Object>> apps = appRepository.findConnectedApps(account.getId());
 		model.addAttribute("apps", apps);
 	}
 

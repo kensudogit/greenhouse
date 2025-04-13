@@ -74,13 +74,15 @@ public class MembersController {
 		Map<String, String> metadata = new HashMap<String, String>();
 		metadata.put("og:title", profile.getDisplayName());
 		metadata.put("og:type", "public_figure");
-		// TODO Greenhouseはここでハードコードされている
-		metadata.put("og:site_name", "Greenhouse");
+		metadata.put("og:site_name", siteName);
 		metadata.put("fb:app_id", facebookAppId);
 		return metadata;
 	}
 
 	@Value("#{environment['facebook.appId']}")
 	private String facebookAppId;
+
+	@Value("${site.name}")
+	private String siteName;
 
 }

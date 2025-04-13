@@ -34,16 +34,52 @@ class EventSessionData {
 	private final long sourceId;
 	private final List<Long> leaderIds;
 
-	public EventSessionData(long event, int id, String title, String description, String hashtag, Long venue,
-			Long timeslot, String source, long sourceId, List<Long> leaderIds) {
+	class EventDetails {
+		private final String title;
+		private final String description;
+		private final String hashtag;
+		private final Long venue;
+		private final Long timeslot;
+
+		public EventDetails(String title, String description, String hashtag, Long venue, Long timeslot) {
+			this.title = title;
+			this.description = description;
+			this.hashtag = hashtag;
+			this.venue = venue;
+			this.timeslot = timeslot;
+		}
+
+		public String getTitle() {
+			return title;
+		}
+
+		public String getDescription() {
+			return description;
+		}
+
+		public String getHashtag() {
+			return hashtag;
+		}
+
+		public Long getVenue() {
+			return venue;
+		}
+
+		public Long getTimeslot() {
+			return timeslot;
+		}
+	}
+
+	public EventSessionData(long event, int id, EventDetails eventDetails, String source, long sourceId,
+			List<Long> leaderIds) {
 		// EventSessionData コンストラクタは、すべてのフィールドを初期化します。
 		this.event = event;
 		this.id = id;
-		this.title = title;
-		this.description = description;
-		this.hashtag = hashtag;
-		this.venue = venue;
-		this.timeslot = timeslot;
+		this.title = eventDetails.getTitle();
+		this.description = eventDetails.getDescription();
+		this.hashtag = eventDetails.getHashtag();
+		this.venue = eventDetails.getVenue();
+		this.timeslot = eventDetails.getTimeslot();
 		this.source = source;
 		this.sourceId = sourceId;
 		this.leaderIds = leaderIds;

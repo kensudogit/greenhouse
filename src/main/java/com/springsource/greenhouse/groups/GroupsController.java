@@ -78,15 +78,19 @@ public class GroupsController {
 	private Map<String, String> buildOpenGraphMetadata(Group group) {
 		Map<String, String> metadata = new HashMap<String, String>();
 		metadata.put("og:title", group.getName());
-		// TODO: "non-profit" はハードコードされています
-		metadata.put("og:type", "non_profit");
-		// TODO Greenhouse はここでハードコードされています
-		metadata.put("og:site_name", "Greenhouse");
+		metadata.put("og:type", ogType);
+		metadata.put("og:site_name", ogSiteName);
 		metadata.put("fb:app_id", facebookAppId);
 		return metadata;
 	}
 
 	@Value("#{environment['facebook.appId']}")
 	private String facebookAppId;
+
+	@Value("${og.type}")
+	private String ogType;
+
+	@Value("${og.site_name}")
+	private String ogSiteName;
 
 }

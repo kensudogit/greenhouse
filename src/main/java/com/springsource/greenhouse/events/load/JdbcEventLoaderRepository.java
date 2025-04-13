@@ -154,7 +154,7 @@ public class JdbcEventLoaderRepository implements EventLoaderRepository {
 			long timeSlotId = keyHolder.getKey().longValue();
 			jdbcTemplate.update(INSERT_EXTERNAL_TIMESLOT, timeSlotId, timeSlotData.getSourceId(),
 					timeSlotData.getSource(), new Date());
-			logger.info("Created timeslot (ID = " + timeSlotId + ")");
+			logger.info("Created timeslot (ID = {})", timeSlotId);
 			return timeSlotId;
 		}
 	}

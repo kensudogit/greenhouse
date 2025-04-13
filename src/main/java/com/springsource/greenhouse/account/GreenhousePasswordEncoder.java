@@ -31,10 +31,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.crypto.password.StandardPasswordEncoder;
 
 /**
- * A PasswordEncoder implementation that uses SHA-256 hashing implemented by the Sun provider with 8-byte random salting by default.
- * Compatibility note: this implementation does NOT perform digest iterations e.g. 1024 iterations.
- * This is for compatibility with the existing password database.
- * See {@link StandardPasswordEncoder} for an implementation that does perform digest iteration correctly (which makes its digests more secure).
+ * SHA-256ハッシュを使用したPasswordEncoderの実装。
+ * Sunプロバイダーによる8バイトのランダムソルトをデフォルトで使用します。
+ * 互換性の注意: この実装はダイジェストの繰り返しを行いません。
+ * これは既存のパスワードデータベースとの互換性のためです。
+ * より安全なダイジェストを行う実装については、StandardPasswordEncoderを参照してください。
+ * 
  * @author Keith Donald
  * @see StandardPasswordEncoder
  */
@@ -47,15 +49,16 @@ public class GreenhousePasswordEncoder implements PasswordEncoder {
 	private final BytesKeyGenerator saltGenerator;
 
 	/**
-	 * Constructs a standard password encoder.
-	 * @param secret the secret key used in the encoding process
+	 * 標準のパスワードエンコーダーを構築します。
+	 * 
+	 * @param secret エンコーディングプロセスで使用される秘密鍵
 	 */
 	public GreenhousePasswordEncoder(String secret) {
 		this("SHA-256", "SUN", secret);
 	}
 
 	/**
-	 * Creates a fully customized standard password encoder.
+	 * 完全にカスタマイズされた標準のパスワードエンコーダーを作成します。
 	 */
 	public GreenhousePasswordEncoder(String algorithm, String provider, String secret) {
 		this.digester = new Digester(algorithm, provider);
@@ -63,10 +66,16 @@ public class GreenhousePasswordEncoder implements PasswordEncoder {
 		this.saltGenerator = KeyGenerators.secureRandom();
 	}
 
+	/**
+	 * パスワードをエンコードします。
+	 */
 	public String encode(CharSequence rawPassword) {
 		return encode(rawPassword, saltGenerator.generateKey());
 	}
 
+	/**
+	 * パスワードが一致するかどうかを確認します。
+	 */
 	public boolean matches(CharSequence rawPassword, String encodedPassword) {
 		byte[] digested = decode(encodedPassword);
 		byte[] salt = subArray(digested, 0, saltGenerator.getKeyLength());
@@ -75,20 +84,32 @@ public class GreenhousePasswordEncoder implements PasswordEncoder {
 
 	// internal helpers
 
+	/**
+	 * パスワードをエンコードします。
+	 */
 	private String encode(CharSequence rawPassword, byte[] salt) {
 		byte[] digest = digest(rawPassword, salt);
 		return new String(Hex.encode(digest));
 	}
 
+	/**
+	 * パスワードをダイジェストします。
+	 */
 	private byte[] digest(CharSequence rawPassword, byte[] salt) {
 		byte[] digest = digester.digest(concatenate(salt, secret, Utf8.encode(rawPassword)));
 		return concatenate(salt, digest);
 	}
 
+	/**
+	 * エンコードされたパスワードをデコードします。
+	 */
 	private byte[] decode(String encodedPassword) {
-		return Hex.decode(encodedPassword);		
+		return Hex.decode(encodedPassword);
 	}
 
+	/**
+	 * 期待されるバイト配列と実際のバイト配列が一致するかどうかを確認します。
+	 */
 	private boolean matches(byte[] expected, byte[] actual) {
 		return Arrays.equals(expected, actual);
 	}
@@ -97,6 +118,12 @@ public class GreenhousePasswordEncoder implements PasswordEncoder {
 
 		private final MessageDigest messageDigest;
 
+		/**
+		 * ダイジェストを計算します。
+		 * 追加のセキュリティのために、少なくとも1024回の繰り返しを適用する必要があります。
+		 * 残念ながら、パスワードデータベースが作成されたときにはこれが行われませんでした。
+		 * したがって、互換性のあるダイジェスト動作を維持する必要があります。
+		 */
 		public Digester(String algorithm, String provider) {
 			try {
 				messageDigest = MessageDigest.getInstance(algorithm, provider);
@@ -108,7 +135,8 @@ public class GreenhousePasswordEncoder implements PasswordEncoder {
 		}
 
 		public byte[] digest(byte[] value) {
-			// at least 1024 iterations should be applied here for additional security against brute-force attacks.
+			// at least 1024 iterations should be applied here for additional security
+			// against brute-force attacks.
 			// Unfortunately this was not done when the password database was populated.
 			// Thus, we need to preserve compatible digest behavior.
 			synchronized (messageDigest) {
@@ -117,5 +145,5 @@ public class GreenhousePasswordEncoder implements PasswordEncoder {
 		}
 
 	}
-	
+
 }

@@ -60,9 +60,9 @@ public class NFJSLoader {
 		int utcOffset = (Integer) locationMap.get("utcOffset");
 		String locationAddress = locationMap.get("address1") + " " + locationMap.get("address2") + " "
 				+ locationMap.get("city") + ", " + locationMap.get("stateCode") + " " + locationMap.get("zip");
-		Long venue = (Long) eventMap.get("venueId"); // Assuming 'venueId' is the key for venue information in
-														// 'eventMap'
-		Map<String, Object> venueData = (Map<String, Object>) eventMap.get("venue");
+		// Long venue = (Long) eventMap.get("venueId"); // Assuming 'venueId' is the key
+		// for venue information in
+		// Map<String, Object> venueData = (Map<String, Object>) eventMap.get("venue");
 		long eventId = loaderRepository.loadEvent(
 				new EventData(MEMBER_GROUP_ID, name, null, abbreviation, firstDay, lastDay, timeZone, PROVIDER_ID,
 						sourceId),

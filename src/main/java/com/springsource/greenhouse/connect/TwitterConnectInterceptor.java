@@ -22,6 +22,7 @@ import org.springframework.social.twitter.api.Twitter;
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.context.request.RequestAttributes;
 
 import com.springsource.greenhouse.account.AccountUtils;
 
@@ -38,17 +39,17 @@ public class TwitterConnectInterceptor implements ConnectInterceptor<Twitter> {
 		// Twitter接続前の処理を行います。
 		// Perform actions before connecting to Twitter.
 		if (StringUtils.hasText(request.getParameter(POST_TWEET_PARAMETER))) {
-			request.setAttribute(POST_TWEET_ATTRIBUTE, Boolean.TRUE, WebRequest.SCOPE_SESSION);
+			request.setAttribute(POST_TWEET_ATTRIBUTE, Boolean.TRUE, RequestAttributes.SCOPE_SESSION);
 		}
 	}
 
 	public void postConnect(Connection<Twitter> connection, WebRequest request) {
 		// Twitter接続後の処理を行います。
 		// Perform actions after connecting to Twitter.
-		if (request.getAttribute(POST_TWEET_ATTRIBUTE, WebRequest.SCOPE_SESSION) != null) {
+		if (request.getAttribute(POST_TWEET_ATTRIBUTE, RequestAttributes.SCOPE_SESSION) != null) {
 			connection.getApi().timelineOperations()
 					.updateStatus("Join me at the Greenhouse! " + AccountUtils.getCurrentAccount().getProfileUrl());
-			request.removeAttribute(POST_TWEET_ATTRIBUTE, WebRequest.SCOPE_SESSION);
+			request.removeAttribute(POST_TWEET_ATTRIBUTE, RequestAttributes.SCOPE_SESSION);
 		}
 	}
 

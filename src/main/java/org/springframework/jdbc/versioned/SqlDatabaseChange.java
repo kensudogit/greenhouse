@@ -71,8 +71,7 @@ public class SqlDatabaseChange extends AbstractDatabaseChange {
 		String currentStatement = lnr.readLine();
 		StringBuilder scriptBuilder = new StringBuilder();
 		while (currentStatement != null) {
-			if (StringUtils.hasText(currentStatement)
-					&& (SQL_COMMENT_PREFIX != null && !currentStatement.startsWith(SQL_COMMENT_PREFIX))) {
+			if (StringUtils.hasText(currentStatement) && !currentStatement.startsWith(SQL_COMMENT_PREFIX)) {
 				if (scriptBuilder.length() > 0) {
 					scriptBuilder.append('\n');
 				}
