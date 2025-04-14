@@ -47,6 +47,10 @@ public class NFJSLoader {
 		this.topicSlotMap = new HashMap<Long, Long>();
 	}
 
+	/*
+	 * NFJSLoaderクラスは、イベントデータを外部のREST APIから取得し、
+	 * データベースにロードするためのサービスクラスです。
+	 */
 	public void loadEventData(int showId) {
 		Map<String, Object> eventMap = restTemplate
 				.getForObject("https://springone2gx.com/m/data/show_short.json?showId={showId}", Map.class, showId);
@@ -57,10 +61,10 @@ public class NFJSLoader {
 		String abbreviation = (String) eventMap.get("abreviation"); // yes, that's correct
 		Map<String, Object> locationMap = (Map<String, Object>) eventMap.get("location");
 		String timeZone = (String) locationMap.get("timeZoneName");
-		int utcOffset = (Integer) locationMap.get("utcOffset");
+		// int utcOffset = (Integer) locationMap.get("utcOffset");
 		String locationAddress = locationMap.get("address1") + " " + locationMap.get("address2") + " "
 				+ locationMap.get("city") + ", " + locationMap.get("stateCode") + " " + locationMap.get("zip");
-		// Long venue = (Long) eventMap.get("venueId"); // Assuming 'venueId' is the key
+		Long venue = (Long) eventMap.get("venueId");
 		// for venue information in
 		// Map<String, Object> venueData = (Map<String, Object>) eventMap.get("venue");
 		long eventId = loaderRepository.loadEvent(
@@ -69,14 +73,17 @@ public class NFJSLoader {
 				new VenueData((String) locationMap.get("description"), (String) locationAddress,
 						(Double) locationMap.get("latitude"), (Double) locationMap.get("longitude"),
 						(String) locationMap.get("metroArea")));
-		loadTimeSlotData(showId, eventId, utcOffset);
+		loadTimeSlotData(showId, eventId);
 		loadLeaderData(showId);
 		loadEventSessionData(showId, eventId, abbreviation);
 	}
 
+	/*
+	 * loadLeaderDataメソッドは、リーダー情報をロードし、
+	 * データベースに保存します。リーダーのIDマッピングも行います。
+	 */
 	private void loadLeaderData(int showId) {
-		@SuppressWarnings("unchecked")
-		List<Map<String, Object>> leaderMapList = (List<Map<String, Object>>) restTemplate
+		List<Map<String, Object>> leaderMapList = restTemplate
 				.getForObject("https://springone2gx.com/m/data/show_speakers.json?showId={showId}", List.class, showId);
 		for (Map<String, Object> leaderMap : leaderMapList) {
 			long sourceId = (Integer) leaderMap.get("id");
@@ -90,8 +97,12 @@ public class NFJSLoader {
 		}
 	}
 
+	/*
+	 * loadTimeSlotDataメソッドは、タイムスロット情報をロードし、
+	 * データベースに保存します。タイムスロットのIDマッピングも行います。
+	 */
 	@SuppressWarnings("unchecked")
-	private void loadTimeSlotData(int showId, long eventId, int utcOffset) {
+	private void loadTimeSlotData(int showId, long eventId) {
 		List<Map<String, Object>> dayMapList = restTemplate
 				.getForObject("https://springone2gx.com/m/data/show_schedule.json?showId={showId}", List.class, showId);
 		for (Map<String, Object> dayMap : dayMapList) {
@@ -116,6 +127,10 @@ public class NFJSLoader {
 		}
 	}
 
+	/*
+	 * loadEventSessionDataメソッドは、イベントセッション情報をロードし、
+	 * データベースに保存します。セッションに関連するリーダー情報も処理します。
+	 */
 	@SuppressWarnings("unchecked")
 	private void loadEventSessionData(int showId, long event, String abbreviation) {
 		List<Map<String, Object>> topicMapList = restTemplate
@@ -126,8 +141,8 @@ public class NFJSLoader {
 			String description = (String) topicMap.get("summary");
 			String hashtag = "#" + abbreviation + sourceId;
 			Long venue = null; // TODO: Figure out how to get this from event // イベントから取得する方法を考える
-			Long sourceTimeslot = topicSlotMap.get(sourceId);
-			Long timeslot = timeSlotIdMap.get(sourceTimeslot);
+			Long sourceTimeSlot = topicSlotMap.get(sourceId);
+			Long timeSlot = timeSlotIdMap.get(sourceTimeSlot);
 			List<Integer> speakerIds = (List<Integer>) topicMap.get("speakerIds");
 			List<Long> leaderIds = new ArrayList<Long>();
 			for (Integer speakerId : speakerIds) {
@@ -142,7 +157,7 @@ public class NFJSLoader {
 			}
 
 			EventSessionData eventSessionData = new EventSessionData(event, -1, title, description, hashtag, venue,
-					timeslot, PROVIDER_ID, sourceId, leaderIds);
+					timeSlot, PROVIDER_ID, sourceId, leaderIds);
 			loaderRepository.loadEventSession(eventSessionData);
 		}
 	}

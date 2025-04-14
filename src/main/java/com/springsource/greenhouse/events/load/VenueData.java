@@ -18,19 +18,19 @@ package com.springsource.greenhouse.events.load;
 class VenueData {
 
 	private final String name;
-	private final  String postalAddress;
-	private final  double latitude;
-	private final  double longitude;
-	private final  String locationHint;
+	private final String postalAddress;
+	private final double latitude;
+	private final double longitude;
+	private final String locationHint;
 
 	public VenueData(String name, String postalAddress, double latitude, double longitude, String locationHint) {
 		this.longitude = longitude;
 		this.latitude = latitude;
 		this.postalAddress = postalAddress;
 		this.name = name;
-		this.locationHint = locationHint;		
+		this.locationHint = locationHint;
 	}
-	
+
 	public String getName() {
 		return name;
 	}
@@ -50,5 +50,5 @@ class VenueData {
 	public String getLocationHint() {
 		return locationHint;
 	}
-	
+
 }

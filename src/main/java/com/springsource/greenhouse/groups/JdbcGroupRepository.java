@@ -54,7 +54,7 @@ public class JdbcGroupRepository implements GroupRepository {
 	private RowMapper<Group> groupMapper = new RowMapper<Group>() {
 		/**
 		 * ResultSetの現在の行をGroupオブジェクトにマッピングします。
-		 * 
+		 *
 		 * @param rs  ResultSetオブジェクト
 		 * @param row 現在の行番号
 		 * @return マッピングされたGroupオブジェクト

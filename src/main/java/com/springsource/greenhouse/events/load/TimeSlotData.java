@@ -15,9 +15,9 @@ class TimeSlotData {
 		this.startTime = startTime;
 		this.endTime = endTime;
 		this.source = source;
-		this.sourceId = sourceId;		
+		this.sourceId = sourceId;
 	}
-	
+
 	public long getEventId() {
 		return eventId;
 	}
@@ -33,11 +33,11 @@ class TimeSlotData {
 	public String getEndTime() {
 		return endTime;
 	}
-	
+
 	public String getSource() {
 		return source;
 	}
-	
+
 	public long getSourceId() {
 		return sourceId;
 	}

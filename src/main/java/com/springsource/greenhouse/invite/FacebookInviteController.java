@@ -86,7 +86,7 @@ public class FacebookInviteController {
 	/**
 	 * Facebookのマルチフレンドセレクターフォームによって招待が送信された後に呼び出されます。
 	 * ユーザーを招待ページにリダイレクトし、成功メッセージをレンダリングします。
-	 * 
+	 *
 	 * @param inviteIds Facebookによって割り当てられた招待ID、送信された各招待に対して1つ
 	 */
 	@RequestMapping(value = "/invite/facebook/request-form", method = RequestMethod.POST)
@@ -108,7 +108,7 @@ public class FacebookInviteController {
 
 	/**
 	 * Facebookの友達のアカウントIDを取得します。
-	 * 
+	 *
 	 * @param facebook Facebookのインスタンス
 	 * @return 友達のアカウントIDのリスト
 	 */

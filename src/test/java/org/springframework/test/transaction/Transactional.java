@@ -24,10 +24,15 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 
+// トランザクション管理を行うJUnitのテストルールを提供するクラス
+// このクラスは、テストがトランザクション内で実行されることを保証し、
+// テストが成功した場合はコミットし、失敗した場合はロールバックします。
 public class Transactional implements TestRule {
 
 	private EmbeddedDatabase database;
 
+	// コンストラクタ: 埋め込みデータベースを受け取り、
+	// トランザクション管理に使用します。
 	public Transactional(EmbeddedDatabase database) {
 		this.database = database;
 	}
@@ -37,6 +42,7 @@ public class Transactional implements TestRule {
 		return new TransactionalStatement(base);
 	}
 
+	// テストのステートメントをトランザクション内で実行するためのメソッド
 	private class TransactionalStatement extends Statement {
 
 		private final Statement next;
@@ -50,6 +56,8 @@ public class Transactional implements TestRule {
 			PlatformTransactionManager tm = new DataSourceTransactionManager(database);
 			TransactionStatus txStatus = tm.getTransaction(new DefaultTransactionDefinition());
 			try {
+				// ステートメントをトランザクション内で評価し、
+				// 成功時にコミット、失敗時にロールバックします。
 				try {
 					next.evaluate();
 				} catch (Throwable e) {
@@ -58,6 +66,7 @@ public class Transactional implements TestRule {
 				}
 				tm.commit(txStatus);
 			} finally {
+				// データベースをシャットダウンします。
 				database.shutdown();
 			}
 		}

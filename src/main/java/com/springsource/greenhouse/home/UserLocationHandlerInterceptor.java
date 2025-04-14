@@ -35,7 +35,7 @@ public class UserLocationHandlerInterceptor implements HandlerInterceptor {
 
 	/**
 	 * リクエストから緯度と経度を取得し、ユーザーの位置情報を設定します。
-	 * 
+	 *
 	 * @param request  HTTPリクエスト
 	 * @param response HTTPレスポンス
 	 * @param handler  ハンドラーオブジェクト
@@ -70,7 +70,7 @@ public class UserLocationHandlerInterceptor implements HandlerInterceptor {
 
 	/**
 	 * リクエスト処理が完了した後に呼び出されるメソッドです。
-	 * 
+	 *
 	 * @param request  HTTPリクエスト
 	 * @param response HTTPレスポンス
 	 * @param handler  ハンドラーオブジェクト

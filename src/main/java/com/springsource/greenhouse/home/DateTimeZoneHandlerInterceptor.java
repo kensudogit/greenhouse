@@ -30,7 +30,7 @@ import org.springframework.web.util.WebUtils;
  * クライアントのタイムゾーンをクッキーから取得し、リクエストのデフォルトタイムゾーンとして設定するSpring MVCインターセプター。
  * JavaScriptでクライアントのタイムゾーンを取得し、サーバーに送信してリクエストのデフォルトタイムゾーンとして適用することができます。
  * クライアントのローカル時間で日付をレンダリングする必要がある場合に便利です。
- * 
+ *
  * @author Keith Donald
  */
 public class DateTimeZoneHandlerInterceptor implements HandlerInterceptor {

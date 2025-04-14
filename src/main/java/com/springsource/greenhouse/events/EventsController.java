@@ -45,7 +45,7 @@ import com.springsource.greenhouse.utils.Location;
 
 /**
  * UI Controller for Event actions.
- * 
+ *
  * @author Keith Donald
  */
 @RestController

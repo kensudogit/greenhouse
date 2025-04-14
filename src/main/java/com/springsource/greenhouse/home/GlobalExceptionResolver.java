@@ -34,7 +34,7 @@ import org.springframework.web.servlet.mvc.support.DefaultHandlerExceptionResolv
  * EmptyResultDataAccessException は 404 を引き起こします。
  * 最初のフォールバックとして {@link ResponseStatusExceptionResolver} に委譲します。
  * 最終フォールバックとして {@link DefaultHandlerExceptionResolver} に委譲します。
- * 
+ *
  * @author Keith Donald
  */
 @Component
@@ -48,7 +48,7 @@ public class GlobalExceptionResolver implements HandlerExceptionResolver {
 
 	/**
 	 * 例外を解決します。
-	 * 
+	 *
 	 * @param request  HTTPリクエスト
 	 * @param response HTTPレスポンス
 	 * @param handler  ハンドラーオブジェクト

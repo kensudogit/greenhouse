@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 /**
  * Controller for the homepage of the application.
- * 
+ *
  * @author Keith Donald
  */
 @Controller

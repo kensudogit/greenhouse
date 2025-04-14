@@ -4,6 +4,9 @@ import java.util.regex.Pattern;
 
 public class CommonValidatorExt {
 
+    // Define a constant for the repeated string
+    private static final String INVALID_VALUE_MESSAGE = " の値が不正です。";
+
     // このクラスは、共通のバリデーションロジックを提供するユーティリティクラスです。
     // インスタンス化を防ぐためにプライベートコンストラクタを持ちます。
     private CommonValidatorExt() {
@@ -23,7 +26,7 @@ public class CommonValidatorExt {
         // このメソッドは、指定されたフィールドの長さが指定された範囲内にあるかを確認します。
         // 値がnullの場合、失敗の結果を返します。
         if (value == null) {
-            return ValidationResult.failure(fieldName + " の値が不正です。");
+            return ValidationResult.failure(fieldName + INVALID_VALUE_MESSAGE);
         }
         int length = value.length();
         // 長さが範囲外の場合、失敗の結果を返します。
@@ -46,7 +49,7 @@ public class CommonValidatorExt {
         // このメソッドは、指定されたフィールドが有効なメールアドレス形式であるかを確認します。
         // 値がnullの場合、失敗の結果を返します。
         if (value == null) {
-            return ValidationResult.failure(fieldName + " の値が不正です。");
+            return ValidationResult.failure(fieldName + INVALID_VALUE_MESSAGE);
         }
         String emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$";
         // メールアドレス形式が不正な場合、失敗の結果を返します。
@@ -60,7 +63,7 @@ public class CommonValidatorExt {
         // このメソッドは、指定されたフィールドが有効な電話番号形式であるかを確認します。
         // 値がnullの場合、失敗の結果を返します。
         if (value == null) {
-            return ValidationResult.failure(fieldName + " の値が不正です。");
+            return ValidationResult.failure(fieldName + INVALID_VALUE_MESSAGE);
         }
         String phoneRegex = "^(\\d{2,4}-\\d{2,4}-\\d{3,4}|\\d{10,11})$";
         // 電話番号形式が不正な場合、失敗の結果を返します。
