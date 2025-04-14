@@ -31,7 +31,7 @@ import org.springframework.social.connect.UserProfile;
 import com.springsource.greenhouse.account.AccountRepository;
 import com.springsource.greenhouse.account.Gender;
 import com.springsource.greenhouse.account.Person;
-import com.springsource.greenhouse.validation.Confirm;
+import com.springsource.greenhouse.config.Confirm;
 
 /**
  * 新しいメンバーのサインアップフォームのモデル。

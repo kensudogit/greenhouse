@@ -1,4 +1,4 @@
-package com.springsource.greenhouse.config;
+package com.springsource.greenhouse.validation;
 
 import java.util.regex.Pattern;
 

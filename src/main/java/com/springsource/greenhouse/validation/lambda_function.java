@@ -1,3 +1,5 @@
+package com.springsource.greenhouse.validation;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
@@ -12,23 +14,22 @@ import com.amazonaws.services.lambda.runtime.RequestHandler;
 import java.util.Map;
 
 // 定数の定義
-final String APPLICATION_JSON = "application/json"; // JSON形式のコンテンツタイプを示す定数
-final String ALLOWED_METHODS = "OPTIONS,POST,GET"; // 許可されるHTTPメソッドを示す定数
-final String ALLOWED_HEADERS = "Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token"; // 許可されるHTTPヘッダーを示す定数
-final String INTERNAL_SERVER_ERROR_MESSAGE = "Internal server error"; // 内部サーバーエラーのメッセージ
+final String APPLICATION_JSON="application/json"; // JSON形式のコンテンツタイプを示す定数
+final String ALLOWED_METHODS="OPTIONS,POST,GET"; // 許可されるHTTPメソッドを示す定数
+final String ALLOWED_HEADERS="Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token"; // 許可されるHTTPヘッダーを示す定数
+final String INTERNAL_SERVER_ERROR_MESSAGE="Internal server error"; // 内部サーバーエラーのメッセージ
 
 // ロギングの設定
-Logger logger = LoggerFactory.getLogger("content_query_service"); // ロガーの初期化
+Logger logger=LoggerFactory.getLogger("content_query_service"); // ロガーの初期化
 
 // AWS SDKの設定
-DynamoDbClient dynamoDbClient = DynamoDbClient.builder()
-        .region(Region.AP_NORTHEAST_1) // DynamoDBクライアントのリージョン設定
-        .build();
+DynamoDbClient dynamoDbClient=DynamoDbClient.builder().region(Region.AP_NORTHEAST_1) // DynamoDBクライアントのリージョン設定
+.build();
 
 // 環境変数の取得
-String POSTS_TABLE_NAME = System.getenv("POSTS_TABLE_NAME"); // 投稿テーブル名の取得
-String POSTMETA_TABLE_NAME = System.getenv("POSTMETA_TABLE_NAME"); // 投稿メタテーブル名の取得
-String CONTENT_BUCKET_NAME = System.getenv("CONTENT_BUCKET_NAME"); // コンテンツバケット名の取得
+String POSTS_TABLE_NAME=System.getenv("POSTS_TABLE_NAME"); // 投稿テーブル名の取得
+String POSTMETA_TABLE_NAME=System.getenv("POSTMETA_TABLE_NAME"); // 投稿メタテーブル名の取得
+String CONTENT_BUCKET_NAME=System.getenv("CONTENT_BUCKET_NAME"); // コンテンツバケット名の取得
 
 // Javaクラスの構造
 public class LambdaFunctionHandler implements RequestHandler<Map<String, Object>, String> {

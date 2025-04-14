@@ -17,20 +17,21 @@ package com.springsource.greenhouse.reset;
 
 import javax.validation.constraints.Size;
 
-import com.springsource.greenhouse.validation.Confirm;
+import com.springsource.greenhouse.config.Confirm;
 
 /**
  * Model for a change password or reset password form.
+ * 
  * @author Keith Donald
  */
-@Confirm(field="password")
+@Confirm(field = "password")
 public class ChangePasswordForm {
-	
-	@Size(min=6, message="must be at least 6 characters")
+
+	@Size(min = 6, message = "must be at least 6 characters")
 	private String password;
 
 	private String confirmPassword;
-		
+
 	/**
 	 * The desired new password.
 	 */

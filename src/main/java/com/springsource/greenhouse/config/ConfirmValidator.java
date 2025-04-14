@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.springsource.greenhouse.validation;
+package com.springsource.greenhouse.config;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
@@ -25,7 +25,7 @@ import org.springframework.util.StringUtils;
 
 /**
  * このクラスは@Confirmフィールドを検証します。
- * 
+ *
  * @author Keith Donald
  */
 public final class ConfirmValidator implements ConstraintValidator<Confirm, Object> {
