@@ -36,13 +36,22 @@ public class EventSessionLeader {
 		return name;
 	}
 
-	// TODO remains for iPhone Client Compatibility
+	// These methods are retained for compatibility with the iPhone client,
+	// which expects separate first and last name fields.
+
+	/**
+	 * Returns the first name of the leader.
+	 * Assumes the first part of the name is the first name.
+	 */
 	public String getFirstName() {
 		String[] parts = name.split(" ");
 		return parts.length > 0 ? parts[0] : "";
 	}
 
-	// TODO remains for iPhone Client Compatibility
+	/**
+	 * Returns the last name of the leader.
+	 * Assumes the last part of the name is the last name.
+	 */
 	public String getLastName() {
 		String[] parts = name.split(" ");
 		return parts.length > 1 ? parts[parts.length - 1] : "";

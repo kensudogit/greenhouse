@@ -58,10 +58,10 @@ public class FacebookConnectInterceptor implements ConnectInterceptor<Facebook> 
 		// Facebook接続前の処理を行います。
 		// リクエストパラメータに基づいて、ウォールへの投稿やプロフィール画像の使用を設定します。
 		if (StringUtils.hasText(request.getParameter(POST_TO_WALL_PARAMETER))) {
-			request.setAttribute(POST_TO_WALL_ATTRIBUTE, Boolean.TRUE, WebRequest.SCOPE_SESSION);
+			request.setAttribute(POST_TO_WALL_ATTRIBUTE, Boolean.TRUE, RequestAttributes.SCOPE_SESSION);
 		}
 		if (StringUtils.hasText(request.getParameter(USE_FACEBOOK_IMAGE_PARAMETER))) {
-			request.setAttribute(USE_FACEBOOK_IMAGE_ATTRIBUTE, Boolean.TRUE, WebRequest.SCOPE_SESSION);
+			request.setAttribute(USE_FACEBOOK_IMAGE_ATTRIBUTE, Boolean.TRUE, RequestAttributes.SCOPE_SESSION);
 		}
 	}
 

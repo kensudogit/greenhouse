@@ -43,20 +43,25 @@ public class MailConfig {
 	}
 
 	/**
-	 * Java Mail送信者。
-	 * メール送信が埋め込みモードで動作することは一般的に期待されていません。
-	 * このメール送信者は常に非同期で呼び出されるため、開発者に問題を引き起こすことはありません。
+	 * mailSenderメソッドは、JavaMailSenderのインスタンスを構成して返します。
+	 * メールのエンコーディング、ホスト、ポート、ユーザー名、パスワードなどの設定を行います。
 	 */
 	@Bean
 	public JavaMailSender mailSender() {
 		JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
 		mailSender.setDefaultEncoding("UTF-8");
+		// メールサーバーのホストを設定
 		mailSender.setHost(environment.getProperty("mail.host"));
+		// メールサーバーのポートを設定（デフォルトは25）
 		mailSender.setPort(environment.getProperty("mail.port", Integer.class, 25));
+		// メールサーバーのユーザー名を設定
 		mailSender.setUsername(environment.getProperty("mail.username"));
+		// メールサーバーのパスワードを設定
 		mailSender.setPassword(environment.getProperty("mail.password"));
 		Properties properties = new Properties();
+		// SMTP認証を使用するかどうかを設定
 		properties.put("mail.smtp.auth", environment.getProperty("mail.smtp.auth", Boolean.class, false));
+		// STARTTLSを使用するかどうかを設定
 		properties.put("mail.smtp.starttls.enable",
 				environment.getProperty("mail.smtp.starttls.enable", Boolean.class, false));
 		mailSender.setJavaMailProperties(properties);

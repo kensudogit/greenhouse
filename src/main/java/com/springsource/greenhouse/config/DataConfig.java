@@ -124,11 +124,14 @@ public class DataConfig {
 	@Profile("standard")
 	static class Standard {
 
-		@Inject
-		private Environment environment;
+		private final Environment environment;
+		private final TextEncryptor textEncryptor;
 
 		@Inject
-		private TextEncryptor textEncryptor;
+		public Standard(Environment environment, TextEncryptor textEncryptor) {
+			this.environment = environment;
+			this.textEncryptor = textEncryptor;
+		}
 
 		@Bean(destroyMethod = "dispose")
 		public DataSource dataSource() {

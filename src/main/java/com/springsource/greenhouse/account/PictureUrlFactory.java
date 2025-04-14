@@ -18,7 +18,9 @@ package com.springsource.greenhouse.account;
 import org.springframework.data.FileStorage;
 
 /**
- * Used by Account mappers to derive absolute profile picture URLs from low-level Account fields. 
+ * Used by Account mappers to derive absolute profile picture URLs from
+ * low-level Account fields.
+ * 
  * @author Keith Donald
  */
 public class PictureUrlFactory {
@@ -26,7 +28,8 @@ public class PictureUrlFactory {
 	private final FileStorage pictureStorage;
 
 	/**
-	 * Creates a PictureUrlFactory that produces picture URLs that access pics from the FileStorage provided.
+	 * Creates a PictureUrlFactory that produces picture URLs that access pics from
+	 * the FileStorage provided.
 	 */
 	public PictureUrlFactory(FileStorage pictureStorage) {
 		this.pictureStorage = pictureStorage;
@@ -34,10 +37,13 @@ public class PictureUrlFactory {
 
 	/**
 	 * An absolute member profile picture URL.
-	 * @param accountId the member account id
-	 * @param size the desired picture size
-	 * @param pictureSet a flag indicating if the member has set their profile picture yet; if false a default profile picture URL will be returned
-	 * @param gender the gender of the member
+	 * 
+	 * @param accountId  the member account id
+	 * @param size       the desired picture size
+	 * @param pictureSet a flag indicating if the member has set their profile
+	 *                   picture yet; if false a default profile picture URL will be
+	 *                   returned
+	 * @param gender     the gender of the member
 	 */
 	public String pictureUrl(Long accountId, PictureSize size, boolean pictureSet, Gender gender) {
 		if (size == null) {
@@ -51,18 +57,18 @@ public class PictureUrlFactory {
 	}
 
 	/**
-	 * The gender's default profile picture URL for the desired size. 
+	 * The gender's default profile picture URL for the desired size.
 	 */
 	public String defaultPictureUrl(Gender gender, PictureSize size) {
 		if (gender == Gender.MALE) {
 			return malePictureUrl(size);
 		} else {
-			return femalePictureUrl(size);				
+			return femalePictureUrl(size);
 		}
 	}
-	
+
 	// internal helpers
-	
+
 	private String malePictureUrl(PictureSize size) {
 		return getProfilePicturePath() + "/male/" + filename(size);
 	}
@@ -74,7 +80,7 @@ public class PictureUrlFactory {
 	private String getProfilePicturePath() {
 		return pictureStorage.absoluteUrl("profile-pics");
 	}
-	
+
 	private String filename(PictureSize size) {
 		return size.name().toLowerCase() + ".jpg";
 	}
