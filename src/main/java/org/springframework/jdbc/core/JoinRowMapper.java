@@ -24,15 +24,12 @@ import java.util.List;
 import org.springframework.dao.DataAccessException;
 
 /**
- * An abstract template for row mapping operations that map multiple rows to a
- * single object.
- * This is useful when joining a one-to-many relationship where there can be
- * multiple rows returned per root (or aggregate).
- * For example, consider the relationship: "a Presentation has one-to-many
- * Speakers".
- * When joining with the Speaker table to build a Presentation object, multiple
- * rows will be returned for a Presentation if it has more than one Speaker.
- * This template is useful in that case.
+ * JoinRowMapper クラスは、複数の行を単一のオブジェクトにマッピングするための抽象テンプレートです。
+ * これは、1対多の関係を持つ結合で、ルート (または集約) ごとに複数の行が返される場合に便利です。
+ * 例えば、「プレゼンテーションには複数のスピーカーがいる」という関係を考えてみましょう。
+ * スピーカーテーブルと結合してプレゼンテーションオブジェクトを構築する際、
+ * プレゼンテーションに複数のスピーカーがいる場合、複数の行が返されます。
+ * このテンプレートはそのような場合に役立ちます。
  * This class has been submitted for contribution to Spring JDBC; see SPR-7698.
  * 
  * @author Keith Donald
@@ -42,17 +39,16 @@ import org.springframework.dao.DataAccessException;
 public abstract class JoinRowMapper<R, I> {
 
 	/**
-	 * Return a {@link RowMapper} that maps exactly one root object R, where there
-	 * may be multiple R rows for each child in a join with a one-to-many
-	 * relationship.
+	 * single メソッドは、1対多の関係で複数の R 行がある場合に、
+	 * 正確に 1 つのルートオブジェクト R をマッピングする RowMapper を返します。
 	 */
 	public RowMapper<R> single() {
 		return singleMapper;
 	}
 
 	/**
-	 * Return a {@link ResultSetExtractor} that 1..n root objects R into a List
-	 * where there may be multiple R rows for each joined child.
+	 * list メソッドは、1..n のルートオブジェクト R をリストにマッピングする ResultSetExtractor を返します。
+	 * ここでは、結合された子ごとに複数の R 行が存在する可能性があります。
 	 */
 	public ResultSetExtractor<List<R>> list() {
 		return listMapper;
@@ -61,19 +57,18 @@ public abstract class JoinRowMapper<R, I> {
 	// subclassing hooks
 
 	/**
-	 * Map the ID property I for the root entity out of the current row in the
-	 * ResultSet.
+	 * mapId メソッドは、ResultSet の現在の行からルートエンティティの ID プロパティ I をマッピングします。
 	 */
 	protected abstract I mapId(ResultSet rs) throws SQLException;
 
 	/**
-	 * Map root object R out of the current row in the ResultSet, including its
-	 * direct properties and excluding child association properties.
+	 * mapRoot メソッドは、ResultSet の現在の行からルートオブジェクト R をマッピングします。
+	 * 直接のプロパティを含み、子の関連プロパティを除外します。
 	 */
 	protected abstract R mapRoot(I id, ResultSet rs) throws SQLException;
 
 	/**
-	 * Map the next child object and add it to root object R.
+	 * addChild メソッドは、次の子オブジェクトをマッピングし、ルートオブジェクト R に追加します。
 	 */
 	protected abstract void addChild(R root, ResultSet rs) throws SQLException;
 

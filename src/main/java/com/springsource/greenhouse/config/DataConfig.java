@@ -1,4 +1,4 @@
-/*
+　/*
  * Copyright 2010-2011 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -94,6 +94,12 @@ public class DataConfig {
 			this.textEncryptor = textEncryptor;
 		}
 
+		/**
+		 * データソースを作成し、埋め込みデータベースを設定します。
+		 * データベース名を"greenhouse"に設定し、データベースタイプをH2に設定します。
+		 * 
+		 * @return 設定されたデータベースを返します。
+		 */
 		@Bean(destroyMethod = "shutdown")
 		public DataSource dataSource() {
 			EmbeddedDatabaseFactory factory = new EmbeddedDatabaseFactory();
@@ -102,8 +108,12 @@ public class DataConfig {
 			return populateDatabase(factory.getDatabase());
 		}
 
-		// internal helpers
-
+		/**
+		 * データベースを初期化し、必要な変更セットを適用します。
+		 * 
+		 * @param database 初期化する埋め込みデータベース
+		 * @return 初期化されたデータベースを返します。
+		 */
 		private EmbeddedDatabase populateDatabase(EmbeddedDatabase database) {
 			new DatabaseUpgrader(database, environment, textEncryptor) {
 				protected void addInstallChanges(DatabaseChangeSet changeSet) {
@@ -133,6 +143,12 @@ public class DataConfig {
 			this.textEncryptor = textEncryptor;
 		}
 
+		/**
+		 * データソースを作成し、標準モードのデータベース接続を設定します。
+		 * 環境プロパティからデータベースのURL、ユーザー名、パスワードを取得します。
+		 * 
+		 * @return 設定されたデータベース接続を返します。
+		 */
 		@Bean(destroyMethod = "dispose")
 		public DataSource dataSource() {
 			JdbcConnectionPool dataSource = JdbcConnectionPool.create(environment.getProperty("database.url"),

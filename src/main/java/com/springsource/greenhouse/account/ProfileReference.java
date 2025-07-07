@@ -22,6 +22,7 @@ import com.springsource.greenhouse.utils.VisualResourceReference;
  * Used to render a link to the profile.
  * The link may contain text and a img.
  * The link text is generally the member's full name.
+ * 
  * @author Keith Donald
  */
 public class ProfileReference extends VisualResourceReference<String> {
@@ -31,7 +32,8 @@ public class ProfileReference extends VisualResourceReference<String> {
 	}
 
 	public static ProfileReference textOnly(Long id, String username, String firstName, String lastName) {
-		return new ProfileReference(username != null && username.length() > 0 ? username : id.toString(), firstName + " " + lastName, null);
+		return new ProfileReference(username != null && !username.isEmpty() ? username : id.toString(),
+				firstName + " " + lastName, null);
 	}
-	
+
 }

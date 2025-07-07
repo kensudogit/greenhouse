@@ -16,37 +16,42 @@
 package com.springsource.greenhouse.account;
 
 import java.io.Serializable;
+import java.security.Principal;
 
 import org.springframework.web.util.UriTemplate;
 
 /**
  * Models the identity of a local member, or user, of the application.
  * Designed to serve as the user Principal upon authentication.
- * Exposes the state required to render a link to the member's profile, as well as send e-mail correspondance.
+ * Exposes the state required to render a link to the member's profile, as well
+ * as send e-mail correspondance.
+ * 
  * @author Keith Donald
  */
 @SuppressWarnings("serial")
-public class Account implements Serializable {
-	
+public class Account implements Serializable, Principal {
+
 	private final Long id;
-	
+
 	private final String firstName;
-	
+
 	private final String lastName;
-	
+
 	private final String email;
-	
+
 	private final String username;
-	
+
 	private final String pictureUrl;
-	
+
 	private final String profileUrl;
-	
+
 	/**
 	 * Constructs an Account object.
-	 * The profielUrl parameter is a UriTemplate to allow the URL to be re-generated if the Account is updated.
+	 * The profielUrl parameter is a UriTemplate to allow the URL to be re-generated
+	 * if the Account is updated.
 	 */
-	public Account(Long id, String firstName, String lastName, String email, String username, String pictureUrl, UriTemplate profileUrlTemplate) {
+	public Account(Long id, String firstName, String lastName, String email, String username, String pictureUrl,
+			UriTemplate profileUrlTemplate) {
 		this.id = id;
 		this.firstName = firstName;
 		this.lastName = lastName;
@@ -55,9 +60,9 @@ public class Account implements Serializable {
 		this.pictureUrl = pictureUrl;
 		this.profileUrl = profileUrlTemplate.expand(getProfileId()).toString();
 	}
-	
+
 	/**
-	 * The internal identifier of this account.  Unique across all accounts.
+	 * The internal identifier of this account. Unique across all accounts.
 	 * When possible, kept internal and not shared with members.
 	 */
 	public Long getId() {
@@ -79,22 +84,25 @@ public class Account implements Serializable {
 	}
 
 	/**
-	 * Convenience operation that derives the full name of the account holder by combining his or her first and last names.
+	 * Convenience operation that derives the full name of the account holder by
+	 * combining his or her first and last names.
 	 */
 	public String getFullName() {
 		return firstName + " " + lastName;
 	}
-	
+
 	/**
 	 * The email address on file for this account.
-	 * May be unique across all accounts.  If so, may be used as a credential in user authentication scenarios.
+	 * May be unique across all accounts. If so, may be used as a credential in user
+	 * authentication scenarios.
 	 */
 	public String getEmail() {
 		return email;
 	}
 
 	/**
-	 * The username on file for this account.  Optional.  When present, is unique across all accounts.
+	 * The username on file for this account. Optional. When present, is unique
+	 * across all accounts.
 	 * If present, preferred as a credential in user authentication scenarios.
 	 */
 	public String getUsername() {
@@ -103,7 +111,8 @@ public class Account implements Serializable {
 
 	/**
 	 * The absolute URL to a picture of the member holding this account.
-	 * The linked picture should be designed to be used as an "avatar" and suitable for display as a thumb-nail.
+	 * The linked picture should be designed to be used as an "avatar" and suitable
+	 * for display as a thumb-nail.
 	 */
 	public String getPictureUrl() {
 		return pictureUrl;
@@ -111,7 +120,8 @@ public class Account implements Serializable {
 
 	/**
 	 * The absolute URL to the user's profile page.
-	 * A visitor can traverse this link to view the public profile of the member associated with this account.
+	 * A visitor can traverse this link to view the public profile of the member
+	 * associated with this account.
 	 */
 	public String getProfileUrl() {
 		return profileUrl;
@@ -119,15 +129,22 @@ public class Account implements Serializable {
 
 	/**
 	 * The key used to lookup the member's public profile.
-	 * Set to the account's {@link #getUsername() username}, unless the username is null.
+	 * Set to the account's {@link #getUsername() username}, unless the username is
+	 * null.
 	 * If the username is null, set to the account's {@link #getId() internal id}.
 	 */
 	public String getProfileId() {
-		return username != null ? username : id.toString(); 
+		return username != null ? username : id.toString();
 	}
-	
-	// for SpringSecurity to fetch Principal#getName ... TODO favor implementing Principal directly in SPR 3.1.0.RC2 and >
-	
+
+	// for SpringSecurity to fetch Principal#getName ... TODO favor implementing
+	// Principal directly in SPR 3.1.0.RC2 and >
+
+	@Override
+	public String getName() {
+		return username != null ? username : email;
+	}
+
 	public String toString() {
 		return id.toString();
 	}

@@ -25,20 +25,43 @@ import com.springsource.greenhouse.signup.WelcomeMailTransformer;
 
 public class WelcomeMailTransformerTest {
 
+	// Test data constants
 	private static final String NEWLINE = System.getProperty("line.separator");
+	private static final long TEST_ACCOUNT_ID = 1L;
+	private static final String TEST_FIRST_NAME = "Roy";
+	private static final String TEST_LAST_NAME = "Clarkson";
+	private static final String TEST_EMAIL = "rclarkson@vmware.com";
+	private static final String TEST_USERNAME = "rclarkson";
+	private static final String TEST_PICTURE_URL = "http://foo.com/bar.jpg";
+	private static final String EXPECTED_FROM = "Greenhouse <noreply@springsource.com>";
+	private static final String EXPECTED_SUBJECT = "Welcome to the Greenhouse!";
+	private static final String EXPECTED_PROFILE_URL = "http://greenhouse.springsource.org/members/rclarkson";
+
+	// ==================== Welcome Mail Tests ====================
 
 	@Test
-	public void welcomeMail() {
+	public void testWelcomeMail_ShouldCreateCorrectMailMessage_WhenValidAccountProvided() {
+		// Given
 		WelcomeMailTransformer transformer = new WelcomeMailTransformer();
+		Account account = createTestAccount();
 
-		Account account = new Account(1L, "Roy", "Clarkson", "rclarkson@vmware.com", "rclarkson", "http://foo.com/bar.jpg", new UriTemplate("http://greenhouse.springsource.org/members/{id}"));
+		// When
 		SimpleMailMessage welcomeMail = (SimpleMailMessage) transformer.welcomeMail(account);
 
-		assertEquals("rclarkson@vmware.com", welcomeMail.getTo()[0]);
-		assertEquals("Greenhouse <noreply@springsource.com>", welcomeMail.getFrom());
-		assertEquals("Welcome to the Greenhouse!", welcomeMail.getSubject());
+		// Then
+		assertEquals("To email should match", TEST_EMAIL, welcomeMail.getTo()[0]);
+		assertEquals("From email should match", EXPECTED_FROM, welcomeMail.getFrom());
+		assertEquals("Subject should match", EXPECTED_SUBJECT, welcomeMail.getSubject());
+
 		String mailText = welcomeMail.getText();
-		assertTrue(mailText.contains("View your member profile at:" + NEWLINE + "http://greenhouse.springsource.org/members/rclarkson"));
+		String expectedProfileText = "View your member profile at:" + NEWLINE + EXPECTED_PROFILE_URL;
+		assertTrue("Mail text should contain profile URL", mailText.contains(expectedProfileText));
 	}
 
+	// ==================== Helper Methods ====================
+
+	private Account createTestAccount() {
+		return new Account(TEST_ACCOUNT_ID, TEST_FIRST_NAME, TEST_LAST_NAME, TEST_EMAIL, TEST_USERNAME,
+				TEST_PICTURE_URL, new UriTemplate("http://greenhouse.springsource.org/members/{id}"));
+	}
 }

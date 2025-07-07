@@ -29,8 +29,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * DatabaseUpgraderの実装で、プログラムによって完全に構成されることを期待します。
- * バージョン情報をデータベース内のDatabaseVersionテーブルに格納します。
+ * GenericDatabaseUpgraderクラスは、データベースのバージョン管理を行うためのクラスです。
+ * 指定されたDataSourceを使用してデータベースに接続し、
+ * DatabaseVersionテーブルを用いてバージョン情報を管理します。
  * 
  * @author Keith Donald
  */
@@ -67,10 +68,19 @@ public class GenericDatabaseUpgrader implements DatabaseUpgrader {
 
 	// implementing DatabaseUpgrader
 
+	/**
+	 * データベースの現在のバージョンを取得します。
+	 * 
+	 * @return 現在のデータベースバージョン
+	 */
 	public DatabaseVersion getCurrentDatabaseVersion() {
 		return currentVersion;
 	}
 
+	/**
+	 * データベースをアップグレードするためのメインメソッドです。
+	 * 追加された変更セットを順に適用し、データベースのバージョンを更新します。
+	 */
 	public void run() {
 		for (DatabaseChangeSet changeSet : changeSets) {
 			if (currentVersion.lessThan(changeSet.getVersion())) {
@@ -87,6 +97,12 @@ public class GenericDatabaseUpgrader implements DatabaseUpgrader {
 
 	// internal helpers
 
+	/**
+	 * 現在のデータベースバージョンをDatabaseVersionテーブルから取得します。
+	 * テーブルが存在しない場合は新たに作成し、バージョン0を設定します。
+	 * 
+	 * @return 現在のデータベースバージョン
+	 */
 	private DatabaseVersion findCurrentVersion() {
 		Connection connection = null;
 		try {
@@ -94,7 +110,7 @@ public class GenericDatabaseUpgrader implements DatabaseUpgrader {
 			DatabaseMetaData metadata = connection.getMetaData();
 			ResultSet result = metadata.getTables(null, null, "DATABASEVERSION", null);
 			try {
-				// checks if the table exists, if not, creates it
+				// テーブルが存在するかを確認し、存在しない場合は作成します。
 				if (result.next()) {
 					Statement stmt = connection.createStatement();
 					try {

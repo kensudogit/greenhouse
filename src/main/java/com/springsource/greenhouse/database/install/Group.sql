@@ -1,8 +1,9 @@
-create table MemberGroup (id identity,
-					name varchar not null unique,
-					slug varchar not null unique,
-					description varchar,
-					hashtag varchar unique,
-					leader bigint not null,
-					primary key (id),
-					foreign key (leader) references Member(id));
+CREATE TABLE MemberGroup (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR NOT NULL UNIQUE,
+    slug VARCHAR NOT NULL UNIQUE,
+    description VARCHAR,
+    hashtag VARCHAR UNIQUE,
+    leader BIGINT NOT NULL,
+    FOREIGN KEY (leader) REFERENCES Member(id)
+);

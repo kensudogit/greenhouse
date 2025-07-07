@@ -1,4 +1,4 @@
-create table Member (id identity,
+create table Member (id SERIAL PRIMARY KEY,
 					firstName varchar not null, 
 					lastName varchar not null,
 					email varchar(320) not null unique,
@@ -7,5 +7,4 @@ create table Member (id identity,
 					gender varchar(1) not null check (gender in ('M', 'F')),
 					birthdate date not null,
 					reputation int default 0,
-					pictureSet boolean default false,
-					primary key (id));
+					pictureSet boolean default false);

@@ -1,11 +1,10 @@
-create table Venue (id identity,
+create table Venue (id SERIAL PRIMARY KEY,
 					name varchar not null,
 					postalAddress varchar not null,
-					latitude double not null,
-					longitude double not null,
+					latitude DOUBLE PRECISION not null,
+					longitude DOUBLE PRECISION not null,
 					locationHint varchar not null,
 					createdBy bigint not null,
-					primary key (id),
 					foreign key (createdBy) references Member(id));
 					
 create table VenueRoom (venue bigint,

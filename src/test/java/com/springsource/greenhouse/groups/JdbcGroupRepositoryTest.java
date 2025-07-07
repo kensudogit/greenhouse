@@ -26,12 +26,16 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
 import com.springsource.greenhouse.database.GreenhouseTestDatabaseBuilder;
 
 public class JdbcGroupRepositoryTest {
-	
+
 	private EmbeddedDatabase db;
-
 	private JdbcTemplate jdbcTemplate;
-
 	private GroupRepository groupRepository;
+
+	// Test data constants
+	private static final String TEST_GROUP_SLUG = "test-group";
+	private static final String EXPECTED_GROUP_NAME = "Test Group";
+	private static final String EXPECTED_GROUP_DESCRIPTION = "This is a test group";
+	private static final String EXPECTED_GROUP_HASHTAG = "#test";
 
 	@Before
 	public void setup() {
@@ -39,20 +43,24 @@ public class JdbcGroupRepositoryTest {
 		jdbcTemplate = new JdbcTemplate(db);
 		groupRepository = new JdbcGroupRepository(jdbcTemplate);
 	}
-	
+
 	@After
 	public void destroy() {
 		if (db != null) {
 			db.shutdown();
 		}
 	}
-	
+
+	// ==================== Group Finding Tests ====================
+
 	@Test
-	public void shouldFindGroupByProfileKey() {
-		Group group = groupRepository.findGroupBySlug("test-group");
-		assertEquals("Test Group", group.getName());
-		assertEquals("This is a test group", group.getDescription());
-		assertEquals("#test", group.getHashtag());
+	public void testFindGroupBySlug_ShouldReturnGroup_WhenValidSlugProvided() {
+		// When
+		Group group = groupRepository.findGroupBySlug(TEST_GROUP_SLUG);
+
+		// Then
+		assertEquals("Group name should match", EXPECTED_GROUP_NAME, group.getName());
+		assertEquals("Group description should match", EXPECTED_GROUP_DESCRIPTION, group.getDescription());
+		assertEquals("Group hashtag should match", EXPECTED_GROUP_HASHTAG, group.getHashtag());
 	}
-	
 }

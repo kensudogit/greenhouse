@@ -1,0 +1,121 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Gradle Build",
+      "type": "shell",
+      "command": "gradlew.bat build",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "presentation": {
+        "reveal": "always"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Gradle Clean",
+      "type": "shell",
+      "command": "gradlew.bat clean",
+      "group": "build",
+      "presentation": {
+        "reveal": "always"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Gradle Test",
+      "type": "shell",
+      "command": "gradlew.bat test",
+      "group": {
+        "kind": "test",
+        "isDefault": true
+      },
+      "presentation": {
+        "reveal": "always"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Gradle Debug Test",
+      "type": "shell",
+      "command": "gradlew.bat debugTest",
+      "group": "test",
+      "presentation": {
+        "reveal": "always"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Gradle Test with Info",
+      "type": "shell",
+      "command": "gradlew.bat test --info",
+      "group": "test",
+      "presentation": {
+        "reveal": "always"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Gradle Test with Debug",
+      "type": "shell",
+      "command": "gradlew.bat test --debug",
+      "group": "test",
+      "presentation": {
+        "reveal": "always"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Gradle Run",
+      "type": "shell",
+      "command": "gradlew.bat run",
+      "group": "build",
+      "presentation": {
+        "reveal": "always"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Gradle Dependencies",
+      "type": "shell",
+      "command": "gradlew.bat dependencies",
+      "group": "build",
+      "presentation": {
+        "reveal": "always"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Gradle Tasks",
+      "type": "shell",
+      "command": "gradlew.bat tasks",
+      "group": "build",
+      "presentation": {
+        "reveal": "always"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Gradle Clean Build",
+      "type": "shell",
+      "command": "gradlew.bat clean build",
+      "group": "build",
+      "presentation": {
+        "reveal": "always"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Gradle Clean Test",
+      "type": "shell",
+      "command": "gradlew.bat clean test",
+      "group": "test",
+      "presentation": {
+        "reveal": "always"
+      },
+      "problemMatcher": []
+    }
+  ]
+} 

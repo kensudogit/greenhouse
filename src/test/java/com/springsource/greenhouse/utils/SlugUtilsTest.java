@@ -20,16 +20,156 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 
 public class SlugUtilsTest {
-	
+
+	// ==================== Basic Slug Tests ====================
+
 	@Test
-	public void toSlug() {
-		assertEquals("test", SlugUtils.toSlug("test"));
-		assertEquals("test-message", SlugUtils.toSlug("test message"));
-		assertEquals("test-message-with-more-than-five-words", 
-				SlugUtils.toSlug("test message with more than five words"));
-		assertEquals("test-message-colon-edition", SlugUtils.toSlug("test message: colon edition"));
-		assertEquals("test-message-number-5", SlugUtils.toSlug("test message number 5"));
-		assertEquals("another--test-messages", SlugUtils.toSlug("another @%$#! test messages"));
-		assertEquals("this-one-was-in-caps", SlugUtils.toSlug("This ONE wAs In CaPs"));
+	public void testToSlug_ShouldReturnSameString_WhenNoSpaces() {
+		// Given
+		String input = "test";
+
+		// When
+		String result = SlugUtils.toSlug(input);
+
+		// Then
+		assertEquals("Single word should remain unchanged", "test", result);
+	}
+
+	@Test
+	public void testToSlug_ShouldReplaceSpacesWithHyphens() {
+		// Given
+		String input = "test message";
+
+		// When
+		String result = SlugUtils.toSlug(input);
+
+		// Then
+		assertEquals("Spaces should be replaced with hyphens", "test-message", result);
+	}
+
+	@Test
+	public void testToSlug_ShouldHandleMultipleWords() {
+		// Given
+		String input = "test message with more than five words";
+
+		// When
+		String result = SlugUtils.toSlug(input);
+
+		// Then
+		assertEquals("Multiple words should be hyphenated", "test-message-with-more-than-five-words", result);
+	}
+
+	// ==================== Special Character Tests ====================
+
+	@Test
+	public void testToSlug_ShouldHandleColons() {
+		// Given
+		String input = "test message: colon edition";
+
+		// When
+		String result = SlugUtils.toSlug(input);
+
+		// Then
+		assertEquals("Colons should be handled properly", "test-message-colon-edition", result);
+	}
+
+	@Test
+	public void testToSlug_ShouldHandleNumbers() {
+		// Given
+		String input = "test message number 5";
+
+		// When
+		String result = SlugUtils.toSlug(input);
+
+		// Then
+		assertEquals("Numbers should be preserved", "test-message-number-5", result);
+	}
+
+	@Test
+	public void testToSlug_ShouldRemoveSpecialCharacters() {
+		// Given
+		String input = "another @%$#! test messages";
+
+		// When
+		String result = SlugUtils.toSlug(input);
+
+		// Then
+		assertEquals("Special characters should be removed", "another--test-messages", result);
+	}
+
+	// ==================== Case Handling Tests ====================
+
+	@Test
+	public void testToSlug_ShouldConvertToLowerCase() {
+		// Given
+		String input = "This ONE wAs In CaPs";
+
+		// When
+		String result = SlugUtils.toSlug(input);
+
+		// Then
+		assertEquals("Mixed case should be converted to lowercase", "this-one-was-in-caps", result);
+	}
+
+	@Test
+	public void testToSlug_ShouldHandleAllUpperCase() {
+		// Given
+		String input = "ALL UPPERCASE TEXT";
+
+		// When
+		String result = SlugUtils.toSlug(input);
+
+		// Then
+		assertEquals("All uppercase should be converted to lowercase", "all-uppercase-text", result);
+	}
+
+	@Test
+	public void testToSlug_ShouldHandleAllLowerCase() {
+		// Given
+		String input = "all lowercase text";
+
+		// When
+		String result = SlugUtils.toSlug(input);
+
+		// Then
+		assertEquals("All lowercase should remain lowercase", "all-lowercase-text", result);
+	}
+
+	// ==================== Edge Case Tests ====================
+
+	@Test
+	public void testToSlug_ShouldHandleEmptyString() {
+		// Given
+		String input = "";
+
+		// When
+		String result = SlugUtils.toSlug(input);
+
+		// Then
+		assertEquals("Empty string should return empty string", "", result);
+	}
+
+	@Test
+	public void testToSlug_ShouldHandleSingleCharacter() {
+		// Given
+		String input = "a";
+
+		// When
+		String result = SlugUtils.toSlug(input);
+
+		// Then
+		assertEquals("Single character should remain unchanged", "a", result);
+	}
+
+	@Test
+	public void testToSlug_ShouldHandleMultipleHyphens() {
+		// Given
+		String input = "word1---word2";
+
+		// When
+		String result = SlugUtils.toSlug(input);
+
+		// Then
+		assertEquals("Multiple hyphens should be handled", "word1---word2", result);
 	}
 }

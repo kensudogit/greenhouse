@@ -17,20 +17,21 @@ package com.springsource.greenhouse.account;
 
 /**
  * Enum constants for the various member profile picture sizes.
+ * 
  * @author Keith Donald
  */
 public enum PictureSize {
-	
+
 	/**
 	 * The small picture size, used for profile link thumbnails.
 	 */
 	SMALL,
-	
+
 	/**
 	 * The normal or medium picture size, used in the default case.
 	 */
 	NORMAL,
-	
+
 	/**
 	 * The large picture size, used when viewing a detailed profile of the member.
 	 */

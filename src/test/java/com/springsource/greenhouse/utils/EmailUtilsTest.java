@@ -20,17 +20,128 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 
 public class EmailUtilsTest {
+
+  // ==================== Valid Email Tests ====================
+
   @Test
-  public void shouldRecognizeAnEmail() {
-      assertTrue(EmailUtils.isEmail("test@test.com"));
+  public void testIsEmail_ShouldReturnTrue_WhenValidEmailProvided() {
+    // Given
+    String validEmail = "test@test.com";
+
+    // When
+    boolean result = EmailUtils.isEmail(validEmail);
+
+    // Then
+    assertTrue("Valid email should be recognized", result);
   }
-  
+
   @Test
-  public void shouldRecognizeANonEmail() {
-      assertFalse(EmailUtils.isEmail("chuck"));
-      assertFalse(EmailUtils.isEmail("@"));
-      assertFalse(EmailUtils.isEmail("a@b.c"));
-      assertFalse(EmailUtils.isEmail("a@b.chuck"));
-      assertFalse(EmailUtils.isEmail("a@b.cd1"));
+  public void testIsEmail_ShouldReturnTrue_WhenValidEmailWithSubdomain() {
+    // Given
+    String validEmail = "user@subdomain.example.com";
+
+    // When
+    boolean result = EmailUtils.isEmail(validEmail);
+
+    // Then
+    assertTrue("Valid email with subdomain should be recognized", result);
+  }
+
+  @Test
+  public void testIsEmail_ShouldReturnTrue_WhenValidEmailWithNumbers() {
+    // Given
+    String validEmail = "user123@example123.com";
+
+    // When
+    boolean result = EmailUtils.isEmail(validEmail);
+
+    // Then
+    assertTrue("Valid email with numbers should be recognized", result);
+  }
+
+  // ==================== Invalid Email Tests ====================
+
+  @Test
+  public void testIsEmail_ShouldReturnFalse_WhenNoAtSymbol() {
+    // Given
+    String invalidEmail = "chuck";
+
+    // When
+    boolean result = EmailUtils.isEmail(invalidEmail);
+
+    // Then
+    assertFalse("Email without @ symbol should be rejected", result);
+  }
+
+  @Test
+  public void testIsEmail_ShouldReturnFalse_WhenOnlyAtSymbol() {
+    // Given
+    String invalidEmail = "@";
+
+    // When
+    boolean result = EmailUtils.isEmail(invalidEmail);
+
+    // Then
+    assertFalse("Email with only @ symbol should be rejected", result);
+  }
+
+  @Test
+  public void testIsEmail_ShouldReturnFalse_WhenTooShortDomain() {
+    // Given
+    String invalidEmail = "a@b.c";
+
+    // When
+    boolean result = EmailUtils.isEmail(invalidEmail);
+
+    // Then
+    assertFalse("Email with too short domain should be rejected", result);
+  }
+
+  @Test
+  public void testIsEmail_ShouldReturnFalse_WhenInvalidDomain() {
+    // Given
+    String invalidEmail = "a@b.chuck";
+
+    // When
+    boolean result = EmailUtils.isEmail(invalidEmail);
+
+    // Then
+    assertFalse("Email with invalid domain should be rejected", result);
+  }
+
+  @Test
+  public void testIsEmail_ShouldReturnFalse_WhenInvalidTopLevelDomain() {
+    // Given
+    String invalidEmail = "a@b.cd1";
+
+    // When
+    boolean result = EmailUtils.isEmail(invalidEmail);
+
+    // Then
+    assertFalse("Email with invalid top-level domain should be rejected", result);
+  }
+
+  @Test
+  public void testIsEmail_ShouldReturnFalse_WhenEmptyString() {
+    // Given
+    String invalidEmail = "";
+
+    // When
+    boolean result = EmailUtils.isEmail(invalidEmail);
+
+    // Then
+    assertFalse("Empty string should be rejected", result);
+  }
+
+  @Test
+  public void testIsEmail_ShouldReturnFalse_WhenNullString() {
+    // Given
+    String invalidEmail = null;
+
+    // When
+    boolean result = EmailUtils.isEmail(invalidEmail);
+
+    // Then
+    assertFalse("Null string should be rejected", result);
   }
 }

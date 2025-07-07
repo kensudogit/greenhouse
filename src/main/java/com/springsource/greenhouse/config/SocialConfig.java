@@ -205,7 +205,7 @@ public class SocialConfig {
 	 * 
 	 * "{provider}でサインイン"の試行を調整するSpring MVCコントローラー。
 	 */
-	// @Bean
+	@Bean
 	public ProviderSignInController providerSignInController(AccountRepository accountRepository,
 			RequestCache requestCache) {
 		return new ProviderSignInController(connectionFactoryLocator(), usersConnectionRepository(),

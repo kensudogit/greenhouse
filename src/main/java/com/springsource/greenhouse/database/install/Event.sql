@@ -1,4 +1,4 @@
-create table Leader (id identity,
+create table Leader (id SERIAL PRIMARY KEY,
 					name varchar not null,
 					company varchar,
 					title varchar,
@@ -8,7 +8,6 @@ create table Leader (id identity,
 					companyUrl varchar,
 					twitterUsername varchar,
 					member bigint,
-					primary key (id),
 					foreign key (member) references Member(id));
 
 create table ExternalLeader (leader bigint,
@@ -19,13 +18,12 @@ create table ExternalLeader (leader bigint,
                     foreign key (leader) references Leader(id)
 );
 
-create table Session (id identity,
+create table Session (id SERIAL PRIMARY KEY,
 					title varchar not null,
 					slug varchar not null,
 					description varchar,
 					hashtag varchar,
-					public boolean default false, 
-					primary key (id));
+					"public" boolean default false);
 
 create table SessionDeveloper (session bigint,
 					developer bigint,
@@ -33,7 +31,7 @@ create table SessionDeveloper (session bigint,
 					foreign key (session) references Session(id) on delete cascade,
 					foreign key (developer) references Member(id));
 					
-create table Event (id identity,
+create table Event (id SERIAL PRIMARY KEY,
 					title varchar not null,
 					timeZone varchar not null,
 					startTime timestamp not null,
@@ -41,7 +39,6 @@ create table Event (id identity,
 					slug varchar not null,
 					description varchar,
 					memberGroup bigint not null,
-					primary key (id),
 					foreign key (memberGroup) references MemberGroup(id));
 
 create table ExternalEvent (event bigint,
@@ -67,13 +64,11 @@ create table EventTrack (event bigint,
 					foreign key (event) references Event(id),
 					foreign key (chair) references Member(id));
 
-create table EventTimeSlot (
-					id identity,
+create table EventTimeSlot (id SERIAL PRIMARY KEY,
 					event bigint not null,
 					label varchar,
 					startTime timestamp not null,
 					endTime timestamp not null,
-					primary key (id),
 					foreign key (event) references Event(id));
 
 create table ExternalEventTimeSlot (timeSlot bigint,

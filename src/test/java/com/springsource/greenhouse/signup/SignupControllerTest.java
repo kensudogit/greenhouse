@@ -32,68 +32,92 @@ import com.springsource.greenhouse.account.Person;
 
 public class SignupControllerTest {
 
+	// Test data constants
+	private static final String VALID_SIGNUP_JSON = "{\"first-name\":\"Roy\",\"last-name\":\"Clarkson\",\"email\":\"roy@clarkson.com\",\"confirm-email\":\"roy@clarkson.com\",\"gender\":\"M\",\"birthdate\":{\"month\":7,\"day\":8,\"year\":1976},\"password\":\"letmein\"}";
+	private static final String INVALID_FIRST_NAME_JSON = "{\"first-name\":null,\"last-name\":\"Clarkson\",\"email\":\"roy@clarkson.com\",\"confirm-email\":\"roy@clarkson.com\",\"gender\":\"M\",\"birthdate\":{\"month\":7,\"day\":8,\"year\":1976},\"password\":\"letmein\"}";
+	private static final String MISMATCHED_EMAIL_JSON = "{\"first-name\":\"Roy\",\"last-name\":\"Clarkson\",\"email\":\"roy@clarkson.com\",\"confirm-email\":\"rclarkson@vmware.com\",\"gender\":\"M\",\"birthdate\":{\"month\":7,\"day\":8,\"year\":1976},\"password\":\"letmein\"}";
+
+	// ==================== Successful Signup Tests ====================
+
 	@Test
-	public void signupFromApi_happyTest() throws Exception {
-		AccountRepository accountRepository = mock(AccountRepository.class);		
-		SignedUpGateway gateway = mock(SignedUpGateway.class);		
+	public void testSignupFromApi_ShouldReturnCreated_WhenValidSignupDataProvided() throws Exception {
+		// Given
+		AccountRepository accountRepository = mock(AccountRepository.class);
+		SignedUpGateway gateway = mock(SignedUpGateway.class);
 		SignupController signupController = new SignupController(accountRepository, gateway);
-		
-		String signupJson = "{\"first-name\":\"Roy\",\"last-name\":\"Clarkson\",\"email\":\"roy@clarkson.com\",\"confirm-email\":\"roy@clarkson.com\",\"gender\":\"M\",\"birthdate\":{\"month\":7,\"day\":8,\"year\":1976},\"password\":\"letmein\"}";
 		MockMvc mockMvc = standaloneSetup(signupController).build();
-		mockMvc.perform(post("/signup").contentType(APPLICATION_JSON).body(signupJson.getBytes()))
+
+		// When
+		mockMvc.perform(post("/signup").contentType(APPLICATION_JSON).body(VALID_SIGNUP_JSON.getBytes()))
+
+				// Then
 				.andExpect(MockMvcResultMatchers.status().isCreated())
 				.andExpect(MockMvcResultMatchers.jsonPath("message", Matchers.equalTo("Account created")));
 	}
-	
+
+	// ==================== Error Handling Tests ====================
+
 	@Test
-	public void signupFromApi_duplicateEmail() throws Exception {
+	public void testSignupFromApi_ShouldReturnBadRequest_WhenDuplicateEmailProvided() throws Exception {
+		// Given
 		AccountRepository accountRepository = mock(AccountRepository.class);
-		when(accountRepository.createAccount(any(Person.class))).thenThrow(new EmailAlreadyOnFileException("roy@clarkson.com"));
-		SignedUpGateway gateway = mock(SignedUpGateway.class);		
+		when(accountRepository.createAccount(any(Person.class)))
+				.thenThrow(new EmailAlreadyOnFileException("roy@clarkson.com"));
+		SignedUpGateway gateway = mock(SignedUpGateway.class);
 		SignupController signupController = new SignupController(accountRepository, gateway);
-		
-		String signupJson = "{\"first-name\":\"Roy\",\"last-name\":\"Clarkson\",\"email\":\"roy@clarkson.com\",\"confirm-email\":\"roy@clarkson.com\",\"gender\":\"M\",\"birthdate\":{\"month\":7,\"day\":8,\"year\":1976},\"password\":\"letmein\"}";
 		MockMvc mockMvc = standaloneSetup(signupController).build();
-		mockMvc.perform(post("/signup").contentType(APPLICATION_JSON).body(signupJson.getBytes()))
+
+		// When
+		mockMvc.perform(post("/signup").contentType(APPLICATION_JSON).body(VALID_SIGNUP_JSON.getBytes()))
+
+				// Then
 				.andExpect(MockMvcResultMatchers.status().isBadRequest())
 				.andExpect(MockMvcResultMatchers.jsonPath("message", Matchers.equalTo("Account creation error")))
 				.andExpect(MockMvcResultMatchers.jsonPath("errors[0].field", Matchers.equalTo("email")))
 				.andExpect(MockMvcResultMatchers.jsonPath("errors[0].code", Matchers.equalTo("account.duplicateEmail")))
 				.andExpect(MockMvcResultMatchers.jsonPath("errors[0].message", Matchers.equalTo("already on file")));
 	}
-	
+
 	@Test
-	public void signupFromApi_validationErrors() throws Exception {
+	public void testSignupFromApi_ShouldReturnBadRequest_WhenValidationErrorsOccur() throws Exception {
+		// Given
 		AccountRepository accountRepository = mock(AccountRepository.class);
-		when(accountRepository.createAccount(any(Person.class))).thenThrow(new EmailAlreadyOnFileException("roy@clarkson.com"));
-		SignedUpGateway gateway = mock(SignedUpGateway.class);		
+		when(accountRepository.createAccount(any(Person.class)))
+				.thenThrow(new EmailAlreadyOnFileException("roy@clarkson.com"));
+		SignedUpGateway gateway = mock(SignedUpGateway.class);
 		SignupController signupController = new SignupController(accountRepository, gateway);
-		
-		String signupJson = "{\"first-name\":null,\"last-name\":\"Clarkson\",\"email\":\"roy@clarkson.com\",\"confirm-email\":\"roy@clarkson.com\",\"gender\":\"M\",\"birthdate\":{\"month\":7,\"day\":8,\"year\":1976},\"password\":\"letmein\"}";
 		MockMvc mockMvc = standaloneSetup(signupController).build();
-		mockMvc.perform(post("/signup").contentType(APPLICATION_JSON).body(signupJson.getBytes()))
+
+		// When
+		mockMvc.perform(post("/signup").contentType(APPLICATION_JSON).body(INVALID_FIRST_NAME_JSON.getBytes()))
+
+				// Then
 				.andExpect(MockMvcResultMatchers.status().isBadRequest())
 				.andExpect(MockMvcResultMatchers.jsonPath("message", Matchers.equalTo("Validation error")))
 				.andExpect(MockMvcResultMatchers.jsonPath("errors[0].field", Matchers.equalTo("firstName")))
 				.andExpect(MockMvcResultMatchers.jsonPath("errors[0].code", Matchers.equalTo("NotEmpty")))
 				.andExpect(MockMvcResultMatchers.jsonPath("errors[0].message", Matchers.equalTo("may not be empty")));
 	}
-	
+
 	@Test
-	public void signupFromApi_mismatchedEmails() throws Exception {
+	public void testSignupFromApi_ShouldReturnBadRequest_WhenEmailsDoNotMatch() throws Exception {
+		// Given
 		AccountRepository accountRepository = mock(AccountRepository.class);
-		when(accountRepository.createAccount(any(Person.class))).thenThrow(new EmailAlreadyOnFileException("roy@clarkson.com"));
-		SignedUpGateway gateway = mock(SignedUpGateway.class);		
+		when(accountRepository.createAccount(any(Person.class)))
+				.thenThrow(new EmailAlreadyOnFileException("roy@clarkson.com"));
+		SignedUpGateway gateway = mock(SignedUpGateway.class);
 		SignupController signupController = new SignupController(accountRepository, gateway);
-		
-		String signupJson = "{\"first-name\":\"Roy\",\"last-name\":\"Clarkson\",\"email\":\"roy@clarkson.com\",\"confirm-email\":\"rclarkson@vmware.com\",\"gender\":\"M\",\"birthdate\":{\"month\":7,\"day\":8,\"year\":1976},\"password\":\"letmein\"}";
 		MockMvc mockMvc = standaloneSetup(signupController).build();
-		mockMvc.perform(post("/signup").contentType(APPLICATION_JSON).body(signupJson.getBytes()))
+
+		// When
+		mockMvc.perform(post("/signup").contentType(APPLICATION_JSON).body(MISMATCHED_EMAIL_JSON.getBytes()))
+
+				// Then
 				.andExpect(MockMvcResultMatchers.status().isBadRequest())
 				.andExpect(MockMvcResultMatchers.jsonPath("message", Matchers.equalTo("Validation error")))
 				.andExpect(MockMvcResultMatchers.jsonPath("errors[0].field", Matchers.equalTo("email")))
 				.andExpect(MockMvcResultMatchers.jsonPath("errors[0].code", Matchers.equalTo("Confirm")))
-				.andExpect(MockMvcResultMatchers.jsonPath("errors[0].message", Matchers.equalTo("does not match confirmation email")));
+				.andExpect(MockMvcResultMatchers.jsonPath("errors[0].message",
+						Matchers.equalTo("does not match confirmation email")));
 	}
-
 }

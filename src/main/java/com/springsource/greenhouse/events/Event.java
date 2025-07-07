@@ -117,19 +117,6 @@ public class Event {
 		}
 	}
 
-	private Event(Long id, String title, DateTimeZone timeZone, DateTime startTime, DateTime endTime, String slug,
-			String description, String hashtag, ResourceReference<String> group) {
-		this.id = id;
-		this.title = title;
-		this.timeZone = timeZone;
-		this.startTime = startTime;
-		this.endTime = endTime;
-		this.slug = slug;
-		this.description = description;
-		this.hashtag = hashtag;
-		this.group = group;
-	}
-
 	/**
 	 * The internal identifier of the Event.
 	 */

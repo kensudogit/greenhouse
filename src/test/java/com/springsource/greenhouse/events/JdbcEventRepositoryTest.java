@@ -32,14 +32,23 @@ import com.springsource.greenhouse.utils.Location;
 public class JdbcEventRepositoryTest {
 
 	private EmbeddedDatabase db;
-
 	private JdbcTemplate jdbcTemplate;
-
 	private EventRepository eventRepository;
+
+	// Test data constants
+	private static final String TEST_GROUP_ID = "s2gx";
+	private static final int TEST_YEAR = 2010;
+	private static final int TEST_MONTH = 10;
+	private static final String TEST_SLUG = "chicago";
+	private static final long TEST_EVENT_ID = 1L;
+	private static final long TEST_VENUE_ID = 1L;
+	private static final long TEST_MEMBER_ID = 1L;
+	private static final long TEST_ATTENDEE_ID = 2L;
 
 	@Before
 	public void setup() {
-		db = new GreenhouseTestDatabaseBuilder().member().group().activity().invite().venue().event().testData(getClass()).getDatabase();
+		db = new GreenhouseTestDatabaseBuilder().member().group().activity().invite().venue().event()
+				.testData(getClass()).getDatabase();
 		jdbcTemplate = new JdbcTemplate(db);
 		eventRepository = new JdbcEventRepository(jdbcTemplate);
 	}
@@ -51,99 +60,172 @@ public class JdbcEventRepositoryTest {
 		}
 	}
 
+	// ==================== Event Finding Tests ====================
+
 	@Test
-	public void findEventBySlug() {
-		Event event = eventRepository.findEventBySlug("s2gx", 2010, 10, "chicago");
-		assertNotNull(event);
-		assertEquals("SpringOne2gx", event.getTitle());
-		assertEquals("SpringOne 2GX is a one-of-a-kind conference for application developers, solution architects, web operations and IT teams who develop, deploy and manage business applications.", event.getDescription());
-//		assertEquals(new DateTime(2010, 10, 19, 15, 0, 0, 0, event.getTimeZone()), event.getStartTime().withZone(event.getTimeZone()));
-//		assertEquals(new DateTime(2010, 10, 22, 15, 0, 0, 0, event.getTimeZone()), event.getEndTime().withZone(event.getTimeZone()));	
-		assertEquals("s2gx", event.getGroup().getId());
-		assertEquals("SpringOne2gx", event.getGroup().getLabel());
-		assertEquals("Westin Lombard Yorktown Center", event.getVenues().iterator().next().getName());
-		assertEquals("70 Yorktown Center Lombard, IL 60148", event.getVenues().iterator().next().getPostalAddress());
-		assertEquals(new Location(41.8751108905486, -88.0184300761646), event.getVenues().iterator().next().getLocation());
-		assertEquals("adjacent to Shopping Center", event.getVenues().iterator().next().getLocationHint());
-	}
-	
-	@Test
-	public void findEventSearchString() {
-		assertEquals("#s2gx", eventRepository.findEventSearchString(1L));
-	}
-	
-	@Test
-	public void findEventSessionSearchString() {
-		assertEquals("#s2gx #mvc", eventRepository.findSessionSearchString(1L, 1));
+	public void testFindEventBySlug_ShouldReturnEvent_WhenValidSlugProvided() {
+		// When
+		Event event = eventRepository.findEventBySlug(TEST_GROUP_ID, TEST_YEAR, TEST_MONTH, TEST_SLUG);
+
+		// Then
+		assertNotNull("Event should not be null", event);
+		assertEquals("Event title should match", "SpringOne2gx", event.getTitle());
+		assertEquals("Event description should match",
+				"SpringOne 2GX is a one-of-a-kind conference for application developers, solution architects, web operations and IT teams who develop, deploy and manage business applications.",
+				event.getDescription());
+		assertEventGroup(event);
+		assertEventVenue(event);
 	}
 
 	@Test
-	public void findSessionsOnDay() {
-		List<EventSession> sessions = eventRepository.findSessionsOnDay(1L, new LocalDate(2010, 10, 21), 1L);
-		assertEquals(2, sessions.size());
-		assertSocial(sessions.get(0), true);
-		assertMobile(sessions.get(1), true);
+	public void testFindEventSearchString_ShouldReturnHashtag_WhenEventExists() {
+		// When
+		String searchString = eventRepository.findEventSearchString(TEST_EVENT_ID);
+
+		// Then
+		assertEquals("Search string should be hashtag format", "#s2gx", searchString);
 	}
 
 	@Test
-	public void findSessionsOnDayEdge() {
-		List<EventSession> sessions = eventRepository.findSessionsOnDay(1L, new LocalDate(2010, 10, 19), 1L);
-		assertEquals(1, sessions.size());
+	public void testFindEventSessionSearchString_ShouldReturnCombinedHashtags_WhenSessionExists() {
+		// When
+		String searchString = eventRepository.findSessionSearchString(TEST_EVENT_ID, 1);
+
+		// Then
+		assertEquals("Session search string should combine event and session hashtags", "#s2gx #mvc", searchString);
+	}
+
+	// ==================== Session Finding Tests ====================
+
+	@Test
+	public void testFindSessionsOnDay_ShouldReturnMultipleSessions_WhenSessionsExist() {
+		// Given
+		LocalDate sessionDate = new LocalDate(2010, 10, 21);
+
+		// When
+		List<EventSession> sessions = eventRepository.findSessionsOnDay(TEST_EVENT_ID, sessionDate, TEST_VENUE_ID);
+
+		// Then
+		assertEquals("Should return 2 sessions", 2, sessions.size());
+		assertSocialSession(sessions.get(0), true);
+		assertMobileSession(sessions.get(1), true);
 	}
 
 	@Test
-	public void findEventFavorites() {
-		List<EventSession> favorites = eventRepository.findEventFavorites(1L, 2L);
-		assertEquals(2, favorites.size());
-		assertSocial(favorites.get(0), false);
-		assertMobile(favorites.get(1), false);
+	public void testFindSessionsOnDay_ShouldReturnSingleSession_WhenOnlyOneSessionExists() {
+		// Given
+		LocalDate sessionDate = new LocalDate(2010, 10, 19);
+
+		// When
+		List<EventSession> sessions = eventRepository.findSessionsOnDay(TEST_EVENT_ID, sessionDate, TEST_VENUE_ID);
+
+		// Then
+		assertEquals("Should return 1 session", 1, sessions.size());
+	}
+
+	// ==================== Favorite Tests ====================
+
+	@Test
+	public void testFindEventFavorites_ShouldReturnFavorites_WhenFavoritesExist() {
+		// When
+		List<EventSession> favorites = eventRepository.findEventFavorites(TEST_EVENT_ID, TEST_ATTENDEE_ID);
+
+		// Then
+		assertEquals("Should return 2 favorites", 2, favorites.size());
+		assertSocialSession(favorites.get(0), false);
+		assertMobileSession(favorites.get(1), false);
 	}
 
 	@Test
-	public void findAttendeeFavorites() {
-		List<EventSession> favorites = eventRepository.findAttendeeFavorites(1L, 1L);
-		assertEquals(2, favorites.size());
-		assertSocial(favorites.get(0), true);
-		assertMobile(favorites.get(1), true);
-	}
-	
-	@Test
-	public void toggleFavorite() {
-		assertFalse(eventRepository.toggleFavorite(1L, 3, 1L));
-		assertTrue(eventRepository.toggleFavorite(1L, 3, 1L));
-	}
-	
-	@Test
-	public void rate() throws RatingPeriodClosedException {
-		eventRepository.rate(2L, 6, 1L, new Rating((short)5, "Rocked"));
-		eventRepository.rate(2L, 6, 2L, new Rating((short)4, "Rocked"));
-		Float rating = eventRepository.rate(2L, 6, 3L, new Rating((short)2, "Rocked"));
-		assertEquals(new Float(3.5), rating);
-	}
-    
-	// internal helpers
-	
-	private void assertMobile(EventSession session, boolean favorite) {
-		assertEquals("Choices in Mobile Application Development", session.getTitle());
-//		assertEquals(new DateTime(2010, 10, 21, 16, 45, 0, 0, DateTimeZone.UTC), session.getStartTime());
-//		assertEquals(new DateTime(2010, 10, 21, 18, 15, 0, 0, DateTimeZone.UTC), session.getEndTime());
-		assertEquals(2, session.getLeaders().size());
-		assertEquals("Roy Clarkson", session.getLeaders().get(0).getName());
-		assertEquals("Keith Donald", session.getLeaders().get(1).getName());		
-		assertEquals(new Float(0), session.getRating());
-		assertEquals(favorite, session.isFavorite());
-		assertEquals("Junior Ballroom B", session.getRoom().getLabel());
+	public void testFindAttendeeFavorites_ShouldReturnFavorites_WhenAttendeeHasFavorites() {
+		// When
+		List<EventSession> favorites = eventRepository.findAttendeeFavorites(TEST_EVENT_ID, TEST_MEMBER_ID);
+
+		// Then
+		assertEquals("Should return 2 favorites", 2, favorites.size());
+		assertSocialSession(favorites.get(0), true);
+		assertMobileSession(favorites.get(1), true);
 	}
 
-	private void assertSocial(EventSession session, boolean favorite) {
-		assertEquals("Developing Social-Ready Web Applications", session.getTitle());
-//		assertEquals(new DateTime(2010, 10, 21, 14, 45, 0, 0, DateTimeZone.UTC), session.getStartTime());
-//		assertEquals(new DateTime(2010, 10, 21, 16, 15, 0, 0, DateTimeZone.UTC), session.getEndTime());		
-		assertEquals(1, session.getLeaders().size());
-		assertEquals("Craig Walls", session.getLeaders().get(0).getName());
-		assertEquals(favorite, session.isFavorite());
-		assertEquals(new Float(0), session.getRating());
-		assertEquals(favorite, session.isFavorite());
-		assertEquals("Junior Ballroom B", session.getRoom().getLabel());
+	@Test
+	public void testToggleFavorite_ShouldToggleFavoriteStatus() {
+		// Given
+		long eventId = 1L;
+		int sessionId = 3;
+		long memberId = 1L;
+
+		// When - First toggle (should add favorite)
+		boolean firstResult = eventRepository.toggleFavorite(eventId, sessionId, memberId);
+
+		// Then
+		assertFalse("First toggle should return false (favorite added)", firstResult);
+
+		// When - Second toggle (should remove favorite)
+		boolean secondResult = eventRepository.toggleFavorite(eventId, sessionId, memberId);
+
+		// Then
+		assertTrue("Second toggle should return true (favorite removed)", secondResult);
+	}
+
+	// ==================== Rating Tests ====================
+
+	@Test
+	public void testRate_ShouldCalculateAverageRating_WhenMultipleRatingsProvided() throws RatingPeriodClosedException {
+		// Given
+		long eventId = 2L;
+		int sessionId = 6;
+		Rating rating1 = new Rating((short) 5, "Rocked");
+		Rating rating2 = new Rating((short) 4, "Rocked");
+		Rating rating3 = new Rating((short) 2, "Rocked");
+
+		// When
+		eventRepository.rate(eventId, sessionId, 1L, rating1);
+		eventRepository.rate(eventId, sessionId, 2L, rating2);
+		Float averageRating = eventRepository.rate(eventId, sessionId, 3L, rating3);
+
+		// Then
+		assertEquals("Average rating should be calculated correctly", new Float(3.5), averageRating);
+	}
+
+	// ==================== Helper Methods ====================
+
+	private void assertEventGroup(Event event) {
+		assertEquals("Group ID should match", TEST_GROUP_ID, event.getGroup().getId());
+		assertEquals("Group label should match", "SpringOne2gx", event.getGroup().getLabel());
+	}
+
+	private void assertEventVenue(Event event) {
+		assertEquals("Venue name should match", "Westin Lombard Yorktown Center",
+				event.getVenues().iterator().next().getName());
+		assertEquals("Venue address should match", "70 Yorktown Center Lombard, IL 60148",
+				event.getVenues().iterator().next().getPostalAddress());
+		assertEquals("Venue location should match", new Location(41.8751108905486, -88.0184300761646),
+				event.getVenues().iterator().next().getLocation());
+		assertEquals("Venue location hint should match", "adjacent to Shopping Center",
+				event.getVenues().iterator().next().getLocationHint());
+	}
+
+	private void assertMobileSession(EventSession session, boolean favorite) {
+		assertEquals("Mobile session title should match", "Choices in Mobile Application Development",
+				session.getTitle());
+		assertEquals("Mobile session should have 2 leaders", 2, session.getLeaders().size());
+		assertEquals("First leader should be Roy Clarkson", "Roy Clarkson", session.getLeaders().get(0).getName());
+		assertEquals("Second leader should be Keith Donald", "Keith Donald", session.getLeaders().get(1).getName());
+		assertEquals("Mobile session rating should be 0", new Float(0), session.getRating());
+		assertEquals("Mobile session favorite status should match", favorite, session.isFavorite());
+		assertEquals("Mobile session room should be Junior Ballroom B", "Junior Ballroom B",
+				session.getRoom().getLabel());
+	}
+
+	private void assertSocialSession(EventSession session, boolean favorite) {
+		assertEquals("Social session title should match", "Developing Social-Ready Web Applications",
+				session.getTitle());
+		assertEquals("Social session should have 1 leader", 1, session.getLeaders().size());
+		assertEquals("Social session leader should be Craig Walls", "Craig Walls",
+				session.getLeaders().get(0).getName());
+		assertEquals("Social session favorite status should match", favorite, session.isFavorite());
+		assertEquals("Social session rating should be 0", new Float(0), session.getRating());
+		assertEquals("Social session room should be Junior Ballroom B", "Junior Ballroom B",
+				session.getRoom().getLabel());
 	}
 }

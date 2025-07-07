@@ -1,10 +1,9 @@
-create table MemberAction (id identity,
+create table MemberAction (id SERIAL PRIMARY KEY,
 					actionType varchar not null,
 					performTime timestamp not null,
-					latitude double,
-					longitude double,
+					latitude double PRECISION,
+					longitude double PRECISION,
 					member bigint,
-					primary key (id),					
 					foreign key (member) references Member(id));
 
 create table Badge (name varchar,
