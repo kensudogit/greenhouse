@@ -13,3 +13,4 @@ plugins {
 
 rootProject.name = 'greenhouse'
 include('app')
+include('greenhouse-tests')

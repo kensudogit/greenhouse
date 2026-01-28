@@ -3,4 +3,5 @@
  */
 
 rootProject.name = "greenhouse"
-include(":demo")
+include("app")
+include("greenhouse-tests")

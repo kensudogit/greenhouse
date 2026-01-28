@@ -21,18 +21,52 @@ dependencies {
     implementation 'com.google.guava:guava:32.1.3-jre'
     
     // Spring Framework dependencies
-    implementation 'org.springframework:spring-core:6.1.3'
-    implementation 'org.springframework:spring-context:6.1.3'
-    implementation 'org.springframework:spring-web:6.1.3'
-    implementation 'org.springframework:spring-webmvc:6.1.3'
-    implementation 'org.springframework:spring-beans:6.1.3'
-    implementation 'org.springframework:spring-aop:6.1.3'
+    implementation 'org.springframework:spring-core:5.3.23'
+    implementation 'org.springframework:spring-context:5.3.23'
+    implementation 'org.springframework:spring-web:5.3.23'
+    implementation 'org.springframework:spring-webmvc:5.3.23'
+    implementation 'org.springframework:spring-beans:5.3.23'
+    implementation 'org.springframework:spring-aop:5.3.23'
+    implementation 'org.springframework:spring-jdbc:5.3.23'
+    implementation 'org.springframework:spring-tx:5.3.23'
+    implementation 'org.springframework:spring-test:5.3.23'
+    
+    // Spring Security dependencies
+    implementation 'org.springframework.security:spring-security-core:5.7.5'
+    implementation 'org.springframework.security:spring-security-crypto:5.7.5'
+    implementation 'org.springframework.security:spring-security-web:5.7.5'
+    implementation 'org.springframework.security:spring-security-config:5.7.5'
+    
+    // Spring Social dependencies
+    implementation 'org.springframework.social:spring-social-core:1.1.4.RELEASE'
+    implementation 'org.springframework.social:spring-social-web:1.1.4.RELEASE'
+    implementation 'org.springframework.social:spring-social-facebook:1.1.1.RELEASE'
+    implementation 'org.springframework.social:spring-social-twitter:1.1.2.RELEASE'
+    
+    // Spring Integration dependencies
+    implementation 'org.springframework.integration:spring-integration-core:5.5.15'
+    implementation 'org.springframework.integration:spring-integration-jdbc:5.5.15'
+    
+    // Joda Time for date/time handling
+    implementation 'joda-time:joda-time:2.12.5'
+    
+    // Database dependencies
+    implementation 'com.h2database:h2:2.2.224'
+    implementation 'org.apache.commons:commons-dbcp2:2.10.0'
+    
+    // JSON processing
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.15.2'
+    
+    // Dependency injection
+    implementation 'javax.inject:javax.inject:1'
     
     // JUnit dependencies for testing
     testImplementation 'junit:junit:4.13.2'
-    testImplementation 'org.mockito:mockito-core:5.8.0'
-    testImplementation 'org.springframework:spring-test:6.1.3'
-    testImplementation 'org.springframework:spring-webmvc:6.1.3'
+    testImplementation 'org.mockito:mockito-core:4.11.0'
+    testImplementation 'org.springframework:spring-test:5.3.23'
+    testImplementation 'org.springframework.security:spring-security-test:5.7.5'
+    testImplementation 'org.hamcrest:hamcrest-core:2.2'
+    testImplementation 'org.hamcrest:hamcrest-library:2.2'
 }
 
 testing {
@@ -42,14 +76,11 @@ testing {
             // Use JUnit4 test framework
             useJUnit('4.13.2')
             
-            // Enable debug information for tests (adjusted)
+            // Enable debug information for tests
             targets {
                 all {
                     testTask.configure {
-                        // Enable debug logging (adjusted)
-                        debug = false
-                        
-                        // Enable detailed logging (adjusted)
+                        // Enable detailed logging
                         logging.captureStandardOutput(LogLevel.INFO)
                         logging.captureStandardError(LogLevel.INFO)
                         
@@ -60,8 +91,6 @@ testing {
                             showExceptions = true
                             showCauses = true
                             displayGranularity = 2
-                            showExceptions = true
-                            showCauses = true
                             
                             // Log test execution details
                             info {
@@ -71,6 +100,13 @@ testing {
                                 showCauses = true
                             }
                         }
+                        
+                        // Set system properties for tests
+                        systemProperty 'java.awt.headless', 'true'
+                        systemProperty 'file.encoding', 'UTF-8'
+                        
+                        // Set JVM arguments for tests
+                        jvmArgs '-Xmx512m', '-Xms256m'
                     }
                 }
             }
@@ -145,5 +181,42 @@ test {
         showExceptions = true
         showCauses = true
         displayGranularity = 2
+    }
+    
+    // Set system properties for tests
+    systemProperty 'java.awt.headless', 'true'
+    systemProperty 'file.encoding', 'UTF-8'
+    
+    // Set JVM arguments for tests
+    jvmArgs '-Xmx512m', '-Xms256m'
+    
+    // Enable parallel test execution
+    maxParallelForks = Runtime.runtime.availableProcessors().intdiv(2) ?: 1
+}
+
+// Task to run all tests with detailed output
+task testAll {
+    group = 'verification'
+    description = 'Run all tests with detailed output'
+    dependsOn test
+}
+
+// Task to run specific test classes
+task listTestClasses {
+    group = 'verification'
+    description = 'List available test classes'
+    
+    doLast {
+        println "Available test classes:"
+        println "- GreenhousePasswordEncoderTest"
+        println "- AccountUtilsTest"
+        println "- GenderTest"
+        println "- EmailAlreadyOnFileExceptionTest"
+        println "- SlugUtilsTest"
+        println "- EmailUtilsTest"
+        println "- ImageUtilsTest"
+        println "- EventTest"
+        println ""
+        println "Usage: gradlew test --tests 'ClassName'"
     }
 }

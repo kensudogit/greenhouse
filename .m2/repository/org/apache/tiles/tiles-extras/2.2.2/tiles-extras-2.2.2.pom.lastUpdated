@@ -1,0 +1,8 @@
+#NOTE: This is a Maven Resolver internal implementation file, its format can be changed without prior notice.
+#Wed Jan 28 15:58:01 JST 2026
+@default-central-https\://repo1.maven.org/maven2/.lastUpdated=1769583480700
+@default-spring-releases-https\://repo.spring.io/release/.lastUpdated=1769583481859
+https\://repo.spring.io/milestone/.error=
+https\://repo.spring.io/milestone/.lastUpdated=1769583481615
+https\://repo.spring.io/release/.error=Could not transfer artifact org.apache.tiles\:tiles-extras\:pom\:2.2.2 from/to spring-releases (https\://repo.spring.io/release)\: status code\: 401, reason phrase\:  (401)
+https\://repo1.maven.org/maven2/.error=Could not transfer artifact org.apache.tiles\:tiles-extras\:pom\:2.2.2 from/to central (https\://repo1.maven.org/maven2)\: C\:\\workspace\\greenhouse\\.m2\\repository\\org\\apache\\tiles\\tiles-extras\\2.2.2\\tiles-extras-2.2.2.pom.3099579624160788737.tmp.3626586140726781396.tmp
