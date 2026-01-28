@@ -26,10 +26,10 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 /**
- * 非同期タスク実行の設定。
- * コンパイル時のAspectJアドバイスを適用して、{@link Async} メソッドを別スレッドで実行できるようにします。
- * 非同期タスク実行を行うExecutorは、{@link ThreadPoolTaskExecutor}です。
- * これは、{@link Async} メソッドの実行や、Spring Integrationによって開始される非同期作業の処理に使用されます。
+ * Asynchronous task execution configuration.
+ * Applies compile-time AspectJ advice to enable {@link Async} methods to execute in separate threads.
+ * The Executor for asynchronous task execution is {@link ThreadPoolTaskExecutor}.
+ * Used for executing {@link Async} methods and processing asynchronous work initiated by Spring Integration.
  * 
  * @author Keith Donald
  */
@@ -37,7 +37,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 @EnableAsync(mode = AdviceMode.ASPECTJ)
 public class TaskConfig implements AsyncConfigurer {
 
-	// implementing AsyncConfigurer
+	@Override
 	public Executor getAsyncExecutor() {
 		return taskExecutor();
 	}

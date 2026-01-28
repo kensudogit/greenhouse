@@ -54,6 +54,18 @@ public class AccountMapper implements RowMapper<Account> {
 	private final UriTemplate profileUrlTemplate;
 
 	/**
+	 * Constructs an AccountMapper with PictureUrlMapper and UriTemplate.
+	 * 
+	 * @param pictureUrlMapper   The PictureUrlMapper for profile pictures
+	 * @param profileUrlTemplate The profile URL template for generating public user
+	 *                           profile links
+	 */
+	public AccountMapper(PictureUrlMapper pictureUrlMapper, UriTemplate profileUrlTemplate) {
+		this.pictureUrlMapper = pictureUrlMapper;
+		this.profileUrlTemplate = profileUrlTemplate;
+	}
+
+	/**
 	 * Constructs an AccountMapper.
 	 * 
 	 * @param pictureStorage     The FileStorage for profile pictures
@@ -63,7 +75,8 @@ public class AccountMapper implements RowMapper<Account> {
 	@Inject
 	public AccountMapper(FileStorage pictureStorage,
 			@Value("#{environment['application.url']}/members/{profileKey}") String profileUrlTemplate) {
-		this(new PictureUrlMapper(new PictureUrlFactory(pictureStorage), PictureSize.SMALL), profileUrlTemplate);
+		this(new PictureUrlMapper(new PictureUrlFactory(pictureStorage), PictureSize.SMALL), 
+			new UriTemplate(profileUrlTemplate));
 	}
 
 	/**

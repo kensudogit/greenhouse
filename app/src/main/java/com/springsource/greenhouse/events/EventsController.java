@@ -64,11 +64,11 @@ public class EventsController {
 	// for web service (JSON) clients
 
 	/**
-	 * イベントのリストをJSON形式でレスポンスのボディに書き込みます。
-	 * 'GET /events' リクエストのみをマッチし、JSONコンテンツを返します。
-	 * それ以外の場合は404を送信します。
-	 * TODO: サポートされていない表現（XMLなど）が要求された場合、406を送信します。
-	 * SPR-7353を参照してください。
+	 * Writes a list of events to the response body in JSON format.
+	 * Matches only 'GET /events' requests and returns JSON content.
+	 * Otherwise sends 404.
+	 * TODO: Send 406 if unsupported representation (e.g., XML) is requested.
+	 * See SPR-7353.
 	 */
 	@GetMapping(value = "/events", produces = "application/json")
 	public List<Event> upcomingEvents(
@@ -79,7 +79,7 @@ public class EventsController {
 	}
 
 	/**
-	 * イベントのお気に入りリストをレスポンスのボディに書き込みます。
+	 * Writes the event's favorite list to the response body.
 	 */
 	@GetMapping(value = "/events/{eventId}/favorites", produces = "application/json")
 	public List<EventSession> favorites(@PathVariable Long eventId, Account account) {
@@ -87,8 +87,8 @@ public class EventsController {
 	}
 
 	/**
-	 * イベントのツイート検索結果のページをレスポンスのボディに書き込みます。
-	 * ページ番号とサイズはクライアントが指定できます。指定されていない場合、デフォルトで10件の結果の最初のページを返します。
+	 * Writes a page of tweet search results for an event to the response body.
+	 * Page number and size can be specified by the client. If not specified, returns the first page with 10 results by default.
 	 */
 	@GetMapping(value = "/events/{eventId}/tweets", produces = "application/json")
 	public SearchResults tweets(@PathVariable Long eventId, @RequestParam(defaultValue = "1") Integer page,
@@ -102,8 +102,8 @@ public class EventsController {
 	}
 
 	/**
-	 * イベントについてのツイートをTwitterに投稿します。
-	 * 成功した場合、OKステータスを返します。
+	 * Posts a tweet about an event to Twitter.
+	 * Returns OK status if successful.
 	 */
 	@PostMapping(value = "/events/{eventId}/tweets")
 	public ResponseEntity<String> postTweet(@PathVariable Long eventId, @RequestParam String status,
@@ -113,7 +113,7 @@ public class EventsController {
 	}
 
 	/**
-	 * 他のイベントツイートをリツイートします。
+	 * Retweets another event tweet.
 	 */
 	@PostMapping(value = "/events/{eventId}/retweet")
 	public ResponseEntity<String> postRetweet(@PathVariable Long eventId, @RequestParam Long tweetId) {
@@ -122,7 +122,7 @@ public class EventsController {
 	}
 
 	/**
-	 * 出席者のお気に入りセッションのリストをレスポンスのボディに書き込みます。
+	 * Writes the list of attendee's favorite sessions to the response body.
 	 */
 	@GetMapping(value = "/events/{eventId}/sessions/favorites", produces = "application/json")
 	public List<EventSession> favoriteSessions(@PathVariable Long eventId, Account account) {
@@ -130,7 +130,7 @@ public class EventsController {
 	}
 
 	/**
-	 * 指定された日のセッションをレスポンスのボディに書き込みます。
+	 * Writes sessions for the specified day to the response body.
 	 */
 	@GetMapping(value = "/events/{eventId}/sessions/{day}", produces = "application/json")
 	public List<EventSession> sessionsOnDay(@PathVariable Long eventId,
@@ -139,8 +139,8 @@ public class EventsController {
 	}
 
 	/**
-	 * セッションを出席者のお気に入りとしてトグルします。
-	 * 新しいお気に入りステータスをレスポンスのボディに書き込みます。
+	 * Toggles a session as an attendee's favorite.
+	 * Writes the new favorite status to the response body.
 	 */
 	@PutMapping(value = "/events/{eventId}/sessions/{sessionId}/favorite")
 	public Boolean toggleFavorite(@PathVariable Long eventId, @PathVariable Integer sessionId, Account account) {
@@ -158,7 +158,7 @@ public class EventsController {
 	}
 
 	/**
-	 * セッションのツイート検索結果のページをレスポンスのボディに書き込みます。
+	 * Writes a page of tweet search results for a session to the response body.
 	 */
 	@GetMapping(value = "/events/{eventId}/sessions/{sessionId}/tweets", produces = "application/json")
 	public SearchResults sessionTweets(@PathVariable Long eventId, @PathVariable Integer sessionId,
@@ -172,7 +172,7 @@ public class EventsController {
 	}
 
 	/**
-	 * セッションについてのツイートを投稿します。
+	 * Posts a tweet about a session.
 	 */
 	@PostMapping(value = "/events/{eventId}/sessions/{sessionId}/tweets")
 	public ResponseEntity<String> postSessionTweet(@PathVariable Long eventId, @PathVariable Integer sessionId,
@@ -182,7 +182,7 @@ public class EventsController {
 	}
 
 	/**
-	 * セッションツイートをリツイートします。
+	 * Retweets a session tweet.
 	 */
 	@PostMapping(value = "/events/{eventId}/sessions/{sessionId}/retweet")
 	public ResponseEntity<String> postSessionRetweet(@PathVariable Long eventId, @PathVariable Integer sessionId,
@@ -194,7 +194,7 @@ public class EventsController {
 	// for web browser (HTML) clients
 
 	/**
-	 * クライアントのWebブラウザでHTMLとして今後のイベントのリストをレンダリングします。
+	 * Renders a list of upcoming events as HTML in the client's web browser.
 	 */
 	@GetMapping(value = "/events", produces = "text/html")
 	public String upcomingEventsView(Model model, DateTimeZone timeZone) {

@@ -31,7 +31,7 @@ public class ResourceReference<T> {
 	}
 
 	/**
-	 * The id of the refernced entity.
+	 * The id of the referenced entity.
 	 * Used to generate a hyperlink to the resource.
 	 */
 	public T getId() {

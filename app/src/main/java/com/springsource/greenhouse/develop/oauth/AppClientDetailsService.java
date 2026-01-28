@@ -15,6 +15,8 @@
  */
 package com.springsource.greenhouse.develop.oauth;
 
+import java.util.Collections;
+
 import javax.inject.Inject;
 
 import org.springframework.security.oauth2.common.exceptions.OAuth2Exception;
@@ -65,13 +67,14 @@ public class AppClientDetailsService implements ClientDetailsService {
 	private static class AppClientDetails extends BaseClientDetails {
 
 		public AppClientDetails(App app, AppConfigRepository configRepository) {
-			super(app.getApiKey(),
-					configRepository.getResourceIds(),
-					configRepository.getScopes(),
-					configRepository.getAuthorizedGrantTypes(),
-					configRepository.getAuthorities(),
-					app.getCallbackUrl());
+			super();
+			setClientId(app.getApiKey());
 			setClientSecret(app.getSecret());
+			setResourceIds(configRepository.getResourceIds());
+			setScope(configRepository.getScopes());
+			setAuthorizedGrantTypes(configRepository.getAuthorizedGrantTypes());
+			setAuthorities(configRepository.getAuthorities());
+			setRegisteredRedirectUri(Collections.singleton(app.getCallbackUrl()));
 		}
 
 	}

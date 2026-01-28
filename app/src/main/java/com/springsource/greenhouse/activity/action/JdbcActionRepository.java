@@ -109,7 +109,7 @@ public class JdbcActionRepository implements ActionRepository {
  * ActionService implementation that saves actions to the database.
  */
 @Repository
-class ActionServiceImpl implements ActionService {
+class ActionServiceImpl implements JdbcActionRepository.ActionService {
 
 	private final JdbcTemplate jdbcTemplate;
 

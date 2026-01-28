@@ -40,12 +40,12 @@ import org.springframework.transaction.annotation.Transactional;
 import com.springsource.greenhouse.database.DatabaseUpgrader;
 
 /**
- * Greenhouse RDBMSアクセス設定。
- * RDBMSは、Greenhouseアプリケーションのトランザクションデータの記録システムを提供します。
- * JdbcTemplateを使用してそのデータにアクセスします。
- * Transactionalメソッドの周りにコンパイル時に織り込まれたAspectJアドバイスを使用してトランザクション管理を適用します。
- * "embedded mode"では、開発者のテスト環境のセットアップを容易にするために埋め込みデータベースを使用します。
- * "standard mode"では、接続プールを介してファイルベースのH2データベースに接続します。
+ * Greenhouse RDBMS access configuration.
+ * RDBMS provides the transactional data recording system for the Greenhouse application.
+ * Access to that data is via JdbcTemplate.
+ * Transaction management is applied using compile-time woven AspectJ advice around @Transactional methods.
+ * In "embedded mode", an embedded database is used to ease developer test environment setup.
+ * In "standard mode", connects to a file-based H2 database via a connection pool.
  * 
  * @author Keith Donald
  */
@@ -61,7 +61,7 @@ public class DataConfig {
 	}
 
 	/**
-	 * リポジトリがJDBC APIを使用してRDBMSデータにアクセスできるようにします。
+	 * Enables repositories to access RDBMS data using JDBC API.
 	 */
 	@Bean
 	public JdbcTemplate jdbcTemplate() {
@@ -69,7 +69,7 @@ public class DataConfig {
 	}
 
 	/**
-	 * JDBC APIを使用してRDBMSに対するトランザクションを管理できるようにします。
+	 * Enables transaction management for RDBMS using JDBC API.
 	 */
 	@Bean
 	public PlatformTransactionManager transactionManager() {
@@ -77,7 +77,7 @@ public class DataConfig {
 	}
 
 	/**
-	 * 埋め込みデータ構成。
+	 * Embedded data configuration.
 	 * 
 	 * @author Keith Donald
 	 */
@@ -95,10 +95,10 @@ public class DataConfig {
 		}
 
 		/**
-		 * データソースを作成し、埋め込みデータベースを設定します。
-		 * データベース名を"greenhouse"に設定し、データベースタイプをH2に設定します。
+		 * Creates a data source and configures an embedded database.
+		 * Sets database name to "greenhouse" and database type to H2.
 		 * 
-		 * @return 設定されたデータベースを返します。
+		 * @return configured database
 		 */
 		@Bean(destroyMethod = "shutdown")
 		public DataSource dataSource() {
@@ -109,10 +109,10 @@ public class DataConfig {
 		}
 
 		/**
-		 * データベースを初期化し、必要な変更セットを適用します。
+		 * Initializes the database and applies necessary change sets.
 		 * 
-		 * @param database 初期化する埋め込みデータベース
-		 * @return 初期化されたデータベースを返します。
+		 * @param database embedded database to initialize
+		 * @return initialized database
 		 */
 		private EmbeddedDatabase populateDatabase(EmbeddedDatabase database) {
 			new DatabaseUpgrader(database, environment, textEncryptor) {
@@ -126,7 +126,7 @@ public class DataConfig {
 	}
 
 	/**
-	 * 標準データ構成。
+	 * Standard data configuration.
 	 * 
 	 * @author Keith Donald
 	 */
@@ -144,10 +144,10 @@ public class DataConfig {
 		}
 
 		/**
-		 * データソースを作成し、標準モードのデータベース接続を設定します。
-		 * 環境プロパティからデータベースのURL、ユーザー名、パスワードを取得します。
+		 * Creates a data source and configures database connection for standard mode.
+		 * Retrieves database URL, username, and password from environment properties.
 		 * 
-		 * @return 設定されたデータベース接続を返します。
+		 * @return configured database connection
 		 */
 		@Bean(destroyMethod = "dispose")
 		public DataSource dataSource() {

@@ -50,10 +50,12 @@ public final class Location {
 		return longitude;
 	}
 
+	@Override
 	public int hashCode() {
 		return latitude.hashCode() + longitude.hashCode() * 29;
 	}
 
+	@Override
 	public boolean equals(Object o) {
 		if (!(o instanceof Location)) {
 			return false;

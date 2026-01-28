@@ -25,10 +25,10 @@ import org.springframework.data.LocalFileStorage;
 import org.springframework.data.S3FileStorage;
 
 /**
- * Greenhouseファイルストアの設定。
- * ユーザープロフィール画像を保存するために使用されます。
- * 組み込みモードでは、"VM終了時に削除"されるローカルファイルストレージを使用します。
- * 標準モードでは、Amazon S3のファイルストレージサービスを使用します。
+ * Greenhouse file store configuration.
+ * Used to store user profile pictures.
+ * In embedded mode, uses local file storage that is "deleted on VM exit".
+ * In standard mode, uses Amazon S3 file storage service.
  * 
  * @author Keith Donald
  */
@@ -41,7 +41,7 @@ public class FileStoreConfig {
 	}
 
 	/**
-	 * ローカル。
+	 * Local file storage configuration.
 	 * 
 	 * @author Keith Donald
 	 */
@@ -70,7 +70,7 @@ public class FileStoreConfig {
 	}
 
 	/**
-	 * S3。
+	 * S3 file storage configuration.
 	 * 
 	 * @author Keith Donald
 	 */

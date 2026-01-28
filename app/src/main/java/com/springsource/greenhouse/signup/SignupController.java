@@ -23,11 +23,11 @@ import java.util.Map;
 import javax.inject.Inject;
 import javax.validation.Valid;
 
-import javax.validation.Validator;
-import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.social.connect.Connection;
+import org.springframework.social.connect.ConnectionFactoryLocator;
+import org.springframework.social.connect.UsersConnectionRepository;
 import org.springframework.social.connect.web.ProviderSignInUtils;
 
 import com.springsource.greenhouse.signup.AccountService;
@@ -67,13 +67,18 @@ public class SignupController {
 	// サインアップヘルパーのインスタンスを保持します。
 	private final SignupHelper signupHelper;
 
+	// ProviderSignInUtilsのインスタンス
+	private final ProviderSignInUtils providerSignInUtils;
+
 	// メッセージ属性の定数を定義します。
 	private static final String MESSAGE_ATTRIBUTE = "message";
 
 	@Inject
-	public SignupController(AccountRepository accountRepository, SignedUpGateway gateway, AccountService accountService) {
+	public SignupController(AccountRepository accountRepository, SignedUpGateway gateway, AccountService accountService,
+			ConnectionFactoryLocator connectionFactoryLocator, UsersConnectionRepository usersConnectionRepository) {
 		// サインアップヘルパーを初期化します。
 		this.signupHelper = new SignupHelper(accountRepository, gateway, accountService);
+		this.providerSignInUtils = new ProviderSignInUtils(connectionFactoryLocator, usersConnectionRepository);
 	}
 
 	/**
@@ -83,7 +88,7 @@ public class SignupController {
 	 */
 	@GetMapping("/signup")
 	public SignupForm signupForm(WebRequest request) {
-		Connection<?> connection = ProviderSignInUtils.getConnection(request);
+		Connection<?> connection = providerSignInUtils.getConnectionFromSession(request);
 		if (connection != null) {
 			// プロバイダーのアカウントが関連付けられていない場合のメッセージを設定
 			request.setAttribute(MESSAGE_ATTRIBUTE,
@@ -109,7 +114,7 @@ public class SignupController {
 		boolean result = signupHelper.signup(form, formBinding, new SignupCallback() {
 			public void postSignup(Account account) {
 				// サインアップ後の処理を行います。
-				ProviderSignInUtils.handlePostSignUp(account.getId().toString(), request);
+				providerSignInUtils.doPostSignUp(account.getId().toString(), request);
 			}
 		});
 		return result ? "redirect:/" : null;
@@ -154,7 +159,9 @@ public class SignupController {
 		BindException errors = new BindException(form, "signupForm");
 		LocalValidatorFactoryBean factory = new LocalValidatorFactoryBean();
 		factory.afterPropertiesSet();
-		Validator validator = factory.getValidator();
+		javax.validation.Validator javaxValidator = factory.getValidator();
+		org.springframework.validation.beanvalidation.SpringValidatorAdapter validator = 
+			new org.springframework.validation.beanvalidation.SpringValidatorAdapter(javaxValidator);
 		ValidationUtils.invokeValidator(validator, form, errors);
 		return errors;
 	}

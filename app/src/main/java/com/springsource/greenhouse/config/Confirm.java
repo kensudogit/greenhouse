@@ -27,7 +27,7 @@ import javax.validation.Constraint;
 import javax.validation.Payload;
 
 /**
- * クラスレベルの制約で、フィールドの値が他のフィールドの値と一致することを確認します。
+ * Class-level constraint that verifies a field's value matches another field's value.
  * 
  * @author Keith Donald
  */
@@ -38,28 +38,28 @@ import javax.validation.Payload;
 public @interface Confirm {
 
 	/**
-	 * 制約違反時のデフォルトメッセージ。
+	 * Default message when constraint is violated.
 	 */
 	String message() default "{com.springsource.greenhouse.validation.constraints.Confirm.message}";
 
 	/**
-	 * 制約のグループを指定します。
+	 * Groups for the constraint.
 	 */
 	Class<?>[] groups() default {};
 
 	/**
-	 * 制約のペイロードを指定します。
+	 * Payload for the constraint.
 	 */
 	Class<? extends Payload>[] payload() default {};
 
 	/**
-	 * 確認するフィールドの名前。例: password
+	 * Name of the field to confirm. Example: password
 	 */
 	String field();
 
 	/**
-	 * {@link #field()} の値と一致する必要があるフィールドの名前。
-	 * オプション。指定しない場合、デフォルトで "confirm${field}" になります。例: confirmPassword。
+	 * Name of the field that must match {@link #field()}'s value.
+	 * Optional. If not specified, defaults to "confirm${field}". Example: confirmPassword.
 	 */
 	String matches() default "";
 
@@ -69,7 +69,7 @@ public @interface Confirm {
 	@interface List {
 
 		/**
-		 * クラスごとに複数の確認フィールドを指定するために使用されます。
+		 * Used to specify multiple confirmation fields per class.
 		 */
 		Confirm[] value();
 

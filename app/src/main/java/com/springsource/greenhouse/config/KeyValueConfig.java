@@ -26,11 +26,11 @@ import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.core.StringRedisTemplate;
 
 /**
- * Greenhouseのキー・バリュー・ストアの設定。
- * キー・バリュー・ストアは、Greenhouseアプリケーション内のデータを効率的にキャッシュします。
- * Redisキー・バリュー・ストアを使用します。
- * Jedisクライアントと共に{@link StringRedisTemplate}を使用してキャッシュされたデータにアクセスします。
- * "standard"モードでのみ有効です。組み込みシナリオでは、キャッシュしません。
+ * Greenhouse key-value store configuration.
+ * Key-value store efficiently caches data within the Greenhouse application.
+ * Uses Redis key-value store.
+ * Accesses cached data using {@link StringRedisTemplate} together with Jedis client.
+ * Only enabled in "standard" mode. Does not cache in embedded scenarios.
  * 
  * @author Keith Donald
  */
@@ -40,19 +40,15 @@ public class KeyValueConfig {
 
 	@Bean
 	public RedisConnectionFactory redisConnectionFactory(Environment environment) {
-		// Redisのホスト名を設定します
 		JedisConnectionFactory redis = new JedisConnectionFactory();
 		redis.setHostName(environment.getProperty("redis.hostName"));
-		// Redisのポートを設定します
 		redis.setPort(environment.getProperty("redis.port", Integer.class));
-		// Redisのパスワードを設定します
 		redis.setPassword(environment.getProperty("redis.password"));
 		return redis;
 	}
 
 	@Bean
 	public StringRedisTemplate redisTemplate(Environment environment) {
-		// RedisConnectionFactoryを使用してStringRedisTemplateを返します
 		return new StringRedisTemplate(redisConnectionFactory(environment));
 	}
 

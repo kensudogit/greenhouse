@@ -24,7 +24,7 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
 /**
- * このクラスは@Confirmフィールドを検証します。
+ * Validates @Confirm annotated fields.
  *
  * @author Keith Donald
  */
@@ -37,37 +37,38 @@ public final class ConfirmValidator implements ConstraintValidator<Confirm, Obje
 	private String message;
 
 	/**
-	 * Confirmアノテーションを初期化します。
+	 * Initializes the Confirm annotation.
 	 *
-	 * @param constraintAnnotation Confirmアノテーション
+	 * @param constraintAnnotation Confirm annotation
 	 */
+	@Override
 	public void initialize(Confirm constraintAnnotation) {
 		field = constraintAnnotation.field();
 		matches = constraintAnnotation.matches();
 		if (matches == null || matches.isEmpty()) {
-			// matchesがnullまたは空の場合、フィールド名を元に"confirm"を付けた名前を設定します。
+			// If matches is null or empty, set name with "confirm" prefix based on field name
 			matches = "confirm" + StringUtils.capitalize(field);
 		}
 		message = constraintAnnotation.message();
 	}
 
 	/**
-	 * フィールドの値が一致するかどうかを検証します。
+	 * Validates whether the field values match.
 	 *
-	 * @param value   検証対象のオブジェクト
-	 * @param context 検証コンテキスト
-	 * @return フィールドの値が一致する場合はtrue、それ以外はfalse
+	 * @param value   object to validate
+	 * @param context validation context
+	 * @return true if field values match, false otherwise
 	 */
+	@Override
 	public boolean isValid(Object value, ConstraintValidatorContext context) {
 		BeanWrapper beanWrapper = new BeanWrapperImpl(value);
 		Object fieldValue = beanWrapper.getPropertyValue(field);
 		Object matchesValue = beanWrapper.getPropertyValue(matches);
 		boolean matched = ObjectUtils.nullSafeEquals(fieldValue, matchesValue);
 		if (matched) {
-			// フィールドの値が一致する場合
 			return true;
 		} else {
-			// フィールドの値が一致しない場合、デフォルトの制約違反メッセージを無効にし、カスタムメッセージを設定します。
+			// If field values don't match, disable default constraint violation and set custom message
 			context.disableDefaultConstraintViolation();
 			context.buildConstraintViolationWithTemplate(message).addNode(field).addConstraintViolation();
 			return false;

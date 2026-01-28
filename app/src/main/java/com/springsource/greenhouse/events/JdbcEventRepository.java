@@ -1,5 +1,4 @@
 /*
- /*
  * Copyright 2010 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -53,33 +52,48 @@ public class JdbcEventRepository implements EventRepository {
 		this.jdbcTemplate = jdbcTemplate;
 	}
 
-	// 指定された時間以降の今後のイベントを検索します
+	/**
+	 * Finds upcoming events after the specified time.
+	 */
+	@Override
 	public List<Event> findUpcomingEvents(Long afterMillis) {
 		return jdbcTemplate.query(SELECT_UPCOMING_EVENTS, eventMapper.list(),
 				new Date(afterMillis != null ? afterMillis : System.currentTimeMillis()));
 	}
 
-	// スラッグを使用してイベントを検索します
+	/**
+	 * Finds an event by slug.
+	 */
+	@Override
 	public Event findEventBySlug(String groupSlug, Integer year, Integer month, String slug) {
 		return jdbcTemplate.queryForObject(SELECT_EVENT_BY_SLUG, eventMapper.single(), groupSlug, year, month, slug);
 	}
 
-	// イベントの検索文字列を取得します
+	/**
+	 * Gets the search string for an event.
+	 */
+	@Override
 	public String findEventSearchString(Long eventId) {
 		return jdbcTemplate.queryForObject(
 				"select g.hashtag from Event e, MemberGroup g where e.id = ? and e.memberGroup = g.id", String.class,
 				eventId);
 	}
 
-	// セッションの検索文字列を取得します
+	/**
+	 * Gets the search string for a session.
+	 */
+	@Override
 	public String findSessionSearchString(Long eventId, Integer sessionId) {
 		return jdbcTemplate.queryForObject(
 				"select (select g.hashtag from Event e, MemberGroup g where e.id = ? and e.memberGroup = g.id) || ' ' || hashtag from EventSession where event = ? and id = ?",
 				String.class, eventId, eventId, sessionId);
 	}
 
+	/**
+	 * Finds sessions on the specified day.
+	 */
 	@Transactional
-	// 指定された日のセッションを検索します
+	@Override
 	public List<EventSession> findSessionsOnDay(Long eventId, LocalDate day, Long attendeeId) {
 		DateTimeZone eventTimeZone = DateTimeZone
 				.forID(jdbcTemplate.queryForObject("select timezone from Event where id = ?", String.class, eventId));
@@ -89,18 +103,27 @@ public class JdbcEventRepository implements EventRepository {
 				dayStart.toDate(), dayEnd.toDate());
 	}
 
-	// イベントのお気に入りセッションを検索します
+	/**
+	 * Finds favorite sessions for an event.
+	 */
+	@Override
 	public List<EventSession> findEventFavorites(Long eventId, Long attendeeId) {
 		return jdbcTemplate.query(SELECT_EVENT_FAVORITES, eventSessionMapper.list(), eventId, attendeeId, eventId);
 	}
 
-	// 参加者のお気に入りセッションを検索します
+	/**
+	 * Finds favorite sessions for an attendee.
+	 */
+	@Override
 	public List<EventSession> findAttendeeFavorites(Long eventId, Long attendeeId) {
 		return jdbcTemplate.query(SELECT_ATTENDEE_FAVORITES, eventSessionMapper.list(), attendeeId, eventId);
 	}
 
+	/**
+	 * Toggles favorite status.
+	 */
 	@Transactional
-	// お気に入りの状態を切り替えます
+	@Override
 	public boolean toggleFavorite(Long eventId, Integer sessionId, Long attendeeId) {
 		boolean favorite = jdbcTemplate.queryForObject(
 				"select exists(select 1 from EventSessionFavorite where event = ? and session = ? and attendee = ?)",
@@ -115,8 +138,11 @@ public class JdbcEventRepository implements EventRepository {
 		return !favorite;
 	}
 
+	/**
+	 * Rates a session.
+	 */
 	@Transactional
-	// セッションの評価を行います
+	@Override
 	public Float rate(Long eventId, Integer sessionId, Long attendeeId, Rating rating)
 			throws RatingPeriodClosedException {
 		if (!isSessionEnded(eventId, sessionId)) {
@@ -149,7 +175,9 @@ public class JdbcEventRepository implements EventRepository {
 
 	// internal helpers
 
-	// イベントが終了したかどうかを確認します
+	/**
+	 * Checks if a session has ended.
+	 */
 	private boolean isSessionEnded(Long eventId, Integer sessionId) {
 		Date endTime = jdbcTemplate.queryForObject(
 				"select ts.endTime from EventTimeSlot ts, EventSession s where s.event = ? and s.id = ? and ts.id = s.timeSlot",
@@ -157,12 +185,16 @@ public class JdbcEventRepository implements EventRepository {
 		return new Date().after(endTime);
 	}
 
-	// イベントのIDをマッピングします
+	/**
+	 * Maps event IDs.
+	 */
 	private final JoinRowMapper<Event, Long> eventMapper = new JoinRowMapper<Event, Long>() {
+		@Override
 		protected Long mapId(ResultSet rs) throws SQLException {
 			return rs.getLong("id");
 		}
 
+		@Override
 		protected Event mapRoot(Long id, ResultSet rs) throws SQLException {
 			String eventTimeZone = rs.getString("timeZone");
 			return new Event(id, rs.getString("title"), DateTimeZone.forID(eventTimeZone),
@@ -172,6 +204,7 @@ public class JdbcEventRepository implements EventRepository {
 					new ResourceReference<String>(rs.getString("groupSlug"), rs.getString("groupName")));
 		}
 
+		@Override
 		protected void addChild(Event event, ResultSet rs) throws SQLException {
 			event.addVenue(
 					new Venue(rs.getLong("venueId"), rs.getString("venueName"), rs.getString("venuePostalAddress"),
@@ -180,12 +213,16 @@ public class JdbcEventRepository implements EventRepository {
 		}
 	};
 
-	// セッションのIDをマッピングします
+	/**
+	 * Maps session IDs.
+	 */
 	private final JoinRowMapper<EventSession, Integer> eventSessionMapper = new JoinRowMapper<EventSession, Integer>() {
+		@Override
 		protected Integer mapId(ResultSet rs) throws SQLException {
 			return rs.getInt("id");
 		}
 
+		@Override
 		protected EventSession mapRoot(Integer id, ResultSet rs) throws SQLException {
 			String eventTimeZone = "America/New_York"; // HACK: For now hard-code to S2GX 2012's value while sorting
 														// this out.
@@ -198,12 +235,15 @@ public class JdbcEventRepository implements EventRepository {
 					rs.getBoolean("favorite"));
 		}
 
+		@Override
 		protected void addChild(EventSession session, ResultSet rs) throws SQLException {
 			session.addLeader(new EventSessionLeader(rs.getString("name")));
 		}
 	};
 
-	// イベントの時間をUTCに調整します
+	/**
+	 * Adjusts event time to UTC.
+	 */
 	private static DateTime adjustEventTimeToUTC(Timestamp timestamp, String eventTimeZone) {
 		MutableDateTime mutableDateTime = new DateTime(timestamp).toMutableDateTime();
 		mutableDateTime.setZoneRetainFields(DateTimeZone.forID(eventTimeZone));

@@ -26,9 +26,9 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 
 /**
- * メール送信のための設定クラス。
- * JavaMail APIとSpringのJavaMailサポートに依存しています。
- * Spring Integrationの「サインアップパイプライン」と「招待」モジュールで使用されます。
+ * Configuration class for mail sending.
+ * Depends on JavaMail API and Spring's JavaMail support.
+ * Used by Spring Integration's "signup pipeline" and "invite" modules.
  * 
  * @author Keith Donald
  */
@@ -43,25 +43,19 @@ public class MailConfig {
 	}
 
 	/**
-	 * mailSenderメソッドは、JavaMailSenderのインスタンスを構成して返します。
-	 * メールのエンコーディング、ホスト、ポート、ユーザー名、パスワードなどの設定を行います。
+	 * Configures and returns a JavaMailSender instance.
+	 * Sets up mail encoding, host, port, username, password, etc.
 	 */
 	@Bean
 	public JavaMailSender mailSender() {
 		JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
 		mailSender.setDefaultEncoding("UTF-8");
-		// メールサーバーのホストを設定
 		mailSender.setHost(environment.getProperty("mail.host"));
-		// メールサーバーのポートを設定（デフォルトは25）
 		mailSender.setPort(environment.getProperty("mail.port", Integer.class, 25));
-		// メールサーバーのユーザー名を設定
 		mailSender.setUsername(environment.getProperty("mail.username"));
-		// メールサーバーのパスワードを設定
 		mailSender.setPassword(environment.getProperty("mail.password"));
 		Properties properties = new Properties();
-		// SMTP認証を使用するかどうかを設定
 		properties.put("mail.smtp.auth", environment.getProperty("mail.smtp.auth", Boolean.class, false));
-		// STARTTLSを使用するかどうかを設定
 		properties.put("mail.smtp.starttls.enable",
 				environment.getProperty("mail.smtp.starttls.enable", Boolean.class, false));
 		mailSender.setJavaMailProperties(properties);

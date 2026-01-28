@@ -21,7 +21,7 @@ import java.util.Locale;
 import java.util.regex.Pattern;
 
 /**
- * スラッグを生成するためのユーティリティクラスです。スラッグは、リソースのフレンドリーなURLパスで使用される短く意味のある名前です。
+ * Utility class for generating slugs. Slugs are short, meaningful names used in friendly URL paths for resources.
  * 
  * @author Keith Donald
  */
@@ -36,17 +36,17 @@ public class SlugUtils {
 	}
 
 	/**
-	 * 文字列入力をスラッグに変換します。
+	 * Converts a string input to a slug.
 	 */
 	public static String toSlug(String input) {
 		if (input == null) {
 			throw new IllegalArgumentException("Input cannot be null");
 		}
-		// ホワイトスペースをハイフンに置き換えます
+		// Replace whitespace with hyphens
 		String nowhitespace = WHITESPACE.matcher(input).replaceAll("-");
-		// 文字列を正規化します
+		// Normalize the string
 		String normalized = Normalizer.normalize(nowhitespace, Form.NFD);
-		// 非ラテン文字を削除します
+		// Remove non-Latin characters
 		String slug = NONLATIN.matcher(normalized).replaceAll("");
 		return slug.toLowerCase(Locale.ENGLISH);
 	}

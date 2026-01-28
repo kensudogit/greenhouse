@@ -24,7 +24,7 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 
 /**
- * 画像処理ユーティリティクラス。
+ * Image processing utility class.
  * 
  * @author Craig Walls
  */
@@ -35,20 +35,20 @@ public class ImageUtils {
 	}
 
 	/**
-	 * バイト配列に格納された画像を特定の幅にスケーリングします。
+	 * Scales an image stored in a byte array to a specific width.
 	 */
 	public static byte[] scaleImageToWidth(byte[] originalBytes, int scaledWidth) throws IOException {
 		BufferedImage originalImage = ImageIO.read(new ByteArrayInputStream(originalBytes));
 		int originalWidth = originalImage.getWidth();
-		// 画像の元の幅がスケーリング後の幅以下の場合、元のバイト配列を返します。
+		// If original image width is less than or equal to scaled width, return original bytes
 		if (originalWidth <= scaledWidth) {
 			return originalBytes;
 		}
-		// スケーリング後の高さを計算します。
+		// Calculate scaled height
 		int scaledHeight = (int) (originalImage.getHeight() * ((float) scaledWidth / (float) originalWidth));
 		BufferedImage scaledImage = new BufferedImage(scaledWidth, scaledHeight, BufferedImage.TYPE_INT_RGB);
 		Graphics2D g = scaledImage.createGraphics();
-		// 画像をスケーリングして描画します。
+		// Scale and draw the image
 		g.drawImage(originalImage, 0, 0, scaledWidth, scaledHeight, null);
 		g.dispose();
 		ByteArrayOutputStream byteStream = new ByteArrayOutputStream();

@@ -22,8 +22,12 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
-// GeoLocationクラスは、指定された住所の緯度と経度を取得するためのユーティリティクラスです。
-// Google Maps APIを使用して、住所を地理座標に変換します。
+/**
+ * Utility class for obtaining latitude and longitude of a specified address.
+ * Uses Google Maps API to convert addresses to geographic coordinates.
+ * 
+ * @author Keith Donald
+ */
 public class GeoLocation {
 
 	private static final String ENCODING = "UTF-8";
@@ -35,30 +39,41 @@ public class GeoLocation {
 	private String lon;
 	private String lat;
 
-	// GeoLocationのコンストラクタは、緯度と経度を受け取り、インスタンスを初期化します。
+	/**
+	 * Constructs a GeoLocation with latitude and longitude.
+	 */
 	private GeoLocation(String lat, String lon) {
 		this.lon = lon;
 		this.lat = lat;
 	}
 
-	// GeoLocationのインスタンスを文字列として返します。
+	/**
+	 * Returns the GeoLocation instance as a string.
+	 */
+	@Override
 	public String toString() {
 		return "Lat: " + lat + ", Lon: " + lon;
 	}
 
-	// 経度をDouble型で返します。
+	/**
+	 * Returns the longitude as a Double.
+	 */
 	public Double toLongitude() {
 		return Double.valueOf(lon);
 	}
 
-	// 緯度をDouble型で返します。
+	/**
+	 * Returns the latitude as a Double.
+	 */
 	public Double toLatitude() {
 		return Double.valueOf(lat);
 	}
 
-	// 指定された住所からGeoLocationを取得します。
-	// Google Maps APIを使用して住所をエンコードし、HTTPリクエストを送信します。
-	// レスポンスのステータスコードに基づいて処理を行います。
+	/**
+	 * Gets a GeoLocation from the specified address.
+	 * Uses Google Maps API to encode the address and send an HTTP request.
+	 * Processes based on the response status code.
+	 */
 	public static GeoLocation getGeoLocation(String address) throws IOException, InterruptedException {
 		HttpClient client = HttpClient.newHttpClient();
 		HttpRequest request = HttpRequest.newBuilder()
@@ -71,12 +86,12 @@ public class GeoLocation {
 		GeoLocation location = null;
 		int statusCode = Integer.parseInt(line.substring(0, 3));
 		if (statusCode == 200) {
-			// ステータスコードが200の場合、レスポンスから緯度と経度を抽出します。
+			// If status code is 200, extract latitude and longitude from response
 			location = new GeoLocation(
 					line.substring(CSV_PREFIX.length(), line.indexOf(',', CSV_PREFIX.length())),
 					line.substring(line.indexOf(',', CSV_PREFIX.length()) + 1, line.length()));
 		} else {
-			// ステータスコードに基づいて例外をスローします。
+			// Throw exception based on status code
 			switch (statusCode) {
 				case 400:
 					throw new IOException("Bad Request");
